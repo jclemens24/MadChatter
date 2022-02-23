@@ -15,6 +15,7 @@ export default function Photos() {
   const [modalOpen, setModalOpen] = useState(true);
   const [photos, setPhotos] = useState([]);
   const token = useSelector(state => state.auth.token);
+  const authUser = useSelector(state => state.auth.user);
   const { loading, error, sendRequest, clearError } = useHttp();
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function Photos() {
     setModalOpen(prevState => {
       return !prevState;
     });
-    navigate(`/${userId}/profile`);
+    navigate(`/${authUser._id}/profile`);
   };
 
   if (loading) {

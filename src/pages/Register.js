@@ -114,6 +114,7 @@ const Register = props => {
                 id="firstName"
                 type="text"
                 placeholder="First Name"
+                autoComplete="given-name"
               />
               <TextInput
                 className="login__input"
@@ -121,6 +122,7 @@ const Register = props => {
                 id="lastName"
                 type="text"
                 placeholder="Last Name"
+                autoComplete="family-name"
               />
 
               <TextInput
@@ -129,6 +131,7 @@ const Register = props => {
                 id="email"
                 type="email"
                 placeholder="Email"
+                autoComplete="email"
               />
 
               <TextInput
@@ -137,6 +140,7 @@ const Register = props => {
                 id="password"
                 type="password"
                 placeholder="Password"
+                autoComplete="new-password"
               />
 
               <TextInput
@@ -145,6 +149,7 @@ const Register = props => {
                 id="passwordConfirm"
                 type="password"
                 placeholder="Confirm Password"
+                autoComplete="new-password"
               />
               <TextInput
                 className="login__input"
@@ -171,8 +176,8 @@ const Register = props => {
                 className="login__input"
                 id="birthYear"
                 name="birthYear"
-                type="number"
                 placeholder="BirthYear"
+                type="number"
               />
 
               <button className="btn btn__login" type="submit">

@@ -7,6 +7,7 @@ import Profile from './pages/Profile';
 import Messenger from './pages/Messenger';
 import Photos from './pages/Photos.js';
 import FriendProfile from './pages/FriendProfile';
+import TimelineFeed from './pages/TimelineFeed.js';
 import './App.css';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
           <Route path="/:userId/profile/friend" element={<FriendProfile />}>
             <Route path="photos" element={<Photos />} />
           </Route>
+          <Route path="/feed" element={<TimelineFeed />} />
         </Routes>
       </BrowserRouter>
     </div>

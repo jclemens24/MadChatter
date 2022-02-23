@@ -77,6 +77,7 @@ const Login = props => {
                 id="email"
                 type="email"
                 placeholder="Email"
+                autoComplete="email"
               />
 
               <TextInput
@@ -85,6 +86,7 @@ const Login = props => {
                 id="password"
                 type="password"
                 placeholder="Password"
+                autoComplete="current-password"
               />
 
               <button className="btn btn__login" type="submit">

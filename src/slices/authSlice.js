@@ -27,6 +27,9 @@ const authSlice = createSlice({
       const { photo } = action.payload;
       state.user.profilePic = photo;
     },
+    updatePhotos(state, action) {
+      state.user.photos.push(action.payload);
+    },
     logout(state) {
       return initialAuthState;
     },

@@ -46,6 +46,10 @@ export default function Post(props) {
     } catch (err) {}
   };
 
+  if (loading) {
+    return <LoadingSpinner asOverlay />;
+  }
+
   if (error) {
     return <ErrorModal error={error} onClear={clearError} />;
   }
@@ -53,7 +57,6 @@ export default function Post(props) {
   return (
     <div className="post">
       <div className="postWrapper">
-        {loading && <LoadingSpinner asOverlay />}
         <div className="postTop">
           <div className="postTopLeft">
             <Link to={`/${props.user._id}/profile`}>

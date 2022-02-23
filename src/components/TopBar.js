@@ -47,7 +47,9 @@ const TopBar = props => {
             <NavLink className="topbar__link" to={`${userId}/profile`}>
               <span className="topbar__link">Home</span>
             </NavLink>
-            <span className="topbar__link">Timeline</span>
+            <NavLink className="topbar__link" to={`/feed`}>
+              <span className="topbar__link">Timeline</span>
+            </NavLink>
           </div>
           <div className="topbar__icons">
             <div className="topbar__icon--item">

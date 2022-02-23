@@ -23,4 +23,5 @@
   font-size: 2rem;
   cursor: pointer;
   height: inherit;
+  transform: scale(1.2, 1.2);
 }
