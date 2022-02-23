@@ -11,6 +11,7 @@ import {
   Event,
   School,
   Settings,
+  PhotoCameraOutlined,
 } from '@mui/icons-material';
 import { useHttp } from '../hooks/useHttp';
 import { useSelector } from 'react-redux';
@@ -57,6 +58,15 @@ const LeftBar = props => {
             </Link>
           </li>
           <li className="sidebar__listitem">
+            <PhotoCameraOutlined className="sidebar__icon" />
+            <Link
+              style={{ textDecoration: 'none', outline: 'none' }}
+              to={`photos`}
+            >
+              <span className="sidebar__listitem--text">Photos</span>
+            </Link>
+          </li>
+          <li className="sidebar__listitem">
             <PlayCircleOutlineOutlined className="sidebar__icon" />
             <span className="sidebar__listitem--text">Videos</span>
           </li>
@@ -87,6 +97,7 @@ const LeftBar = props => {
         </ul>
         <button className="sidebarButton">Show More</button>
         <hr className="sidebarHr" />
+        <h4>People You May Know</h4>
         <ul className="sidebarFriendList">
           {loading && <LoadingSpinner asOverlay />}
           {nearbyFriends.map(friend => (

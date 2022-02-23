@@ -5,6 +5,7 @@ import Register from './pages/Register.js';
 import Login from './pages/Login.js';
 import Profile from './pages/Profile';
 import Messenger from './pages/Messenger';
+import Photos from './pages/Photos.js';
 import FriendProfile from './pages/FriendProfile';
 import './App.css';
 
@@ -31,7 +32,9 @@ function App() {
               )
             }
           />
-          <Route path="/:userId/profile" element={<Profile />} />
+          <Route path="/:userId/profile" element={<Profile />}>
+            <Route path="photos" element={<Photos />} />
+          </Route>
           <Route path="/messenger" element={<Messenger />} />
           <Route path="/:userId/profile/friend" element={<FriendProfile />} />
         </Routes>

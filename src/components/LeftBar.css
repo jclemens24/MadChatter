@@ -41,11 +41,12 @@
 }
 
 .sidebarButton {
-  width: 150px;
+  width: 50%;
   border: none;
   padding: 10px;
   border-radius: 5px;
   font-weight: 500;
+  cursor: pointer;
 }
 
 .sidebarHr {

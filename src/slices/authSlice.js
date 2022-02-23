@@ -23,6 +23,13 @@ const authSlice = createSlice({
     updateState(state, action) {
       state.user = action.payload.user;
     },
+    setProfilePic(state, action) {
+      const { photo } = action.payload;
+      state.user.profilePic = photo;
+    },
+    logout(state) {
+      return initialAuthState;
+    },
   },
   extraReducers: {
     [login.fulfilled]: (state, action) => {

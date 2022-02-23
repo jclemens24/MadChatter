@@ -13,6 +13,10 @@ const postSlice = createSlice({
   reducers: {
     setPosts(state, action) {
       state.posts.push(...action.payload.posts);
+      state.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    },
+    clearPosts(state) {
+      return initialPostState;
     },
   },
   extraReducers: {

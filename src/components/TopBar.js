@@ -5,13 +5,24 @@ import {
   SearchOutlined,
   NotificationsActiveOutlined,
   ChatOutlined,
+  Logout,
 } from '@mui/icons-material';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { logout } from '../slices/authActions';
+import { useNavigate } from 'react-router-dom';
 
 const TopBar = props => {
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
   const userId = useSelector(state => state.auth.user?._id);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    dispatch(logout());
+    navigate('/');
+  };
   return (
     <div className="topbar__container">
       <div className="topbar__left">
@@ -49,6 +60,9 @@ const TopBar = props => {
             <div className="topbar__icon--item">
               <NotificationsActiveOutlined />
               <span className="topbar__icon--badge">1</span>
+            </div>
+            <div className="topbar__icon--item">
+              <Logout onClick={handleLogout} />
             </div>
           </div>
         </div>

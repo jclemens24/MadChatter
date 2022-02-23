@@ -46,30 +46,15 @@ const Profile = props => {
                 alt={`${authUser.firstName} profile`}
               />
               <form onSubmit={submitHandler}>
-                {!file && (
-                  <input
-                    className="profile__user-image"
-                    src={
-                      authUser.profilePic.startsWith('https')
-                        ? `${authUser.profilePic}`
-                        : `http://localhost:8000/${authUser.profilePic}`
-                    }
-                    alt=""
-                    type="image"
-                    onClick={changeImageHandler}
-                    id="image"
-                    name="image"
-                    accept="image/*"
-                    onChange={grabImageHandler}
-                  />
-                )}{' '}
-                {file && (
-                  <img
-                    className="profile__user-image"
-                    src={previewUrl}
-                    alt=""
-                  />
-                )}
+                <img
+                  className="profile__user-image"
+                  src={
+                    authUser.profilePic.startsWith('https')
+                      ? `${authUser.profilePic}`
+                      : `http://localhost:8000/${authUser.profilePic}`
+                  }
+                  alt=""
+                />
               </form>
             </div>
             <div className="profile__info">
