@@ -10,6 +10,10 @@ router.post('/signup', authController.signup);
 router.use(authController.verifyAuth);
 router.get('/', userController.getAUser);
 router.get('/:lnglat', userController.suggestFriends);
+router
+  .route('/:userId/photos')
+  .get(userController.getUserPhotos)
+  .put(userController.setUserPhoto);
 
 router
   .route('/:userId/friends')

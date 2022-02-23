@@ -108,3 +108,34 @@ exports.suggestFriends = catchAsync(async (req, res, next) => {
     users: nearbyUsers
   });
 });
+
+exports.getUserPhotos = catchAsync(async (req, res, next) => {
+  const { userId } = req.params;
+
+  const userPhotos = await User.findById(userId, 'photos');
+  if (!userPhotos) {
+    return next(new AppError('User has no photos', 400));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    photos: userPhotos
+  });
+});
+
+exports.setUserPhoto = catchAsync(async (req, res, next) => {
+  const { userId } = req.params;
+
+  const updatePhoto = await User.findByIdAndUpdate(
+    userId,
+    { profilePic: req.body.photo },
+    {
+      new: true
+    }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    user: updatePhoto
+  });
+});

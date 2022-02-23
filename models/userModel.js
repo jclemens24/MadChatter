@@ -42,11 +42,14 @@ const userSchema = new mongoose.Schema(
     },
     profilePic: {
       type: String,
-      default: 'https://randomuser.me/api/portraits/lego/6.jpg'
+      default: 'default.jpg'
     },
     coverPic: {
       type: String,
-      default: 'https://randomuser.me/api/portraits/lego/5.jpg'
+      default: 'default.jpg'
+    },
+    photos: {
+      type: [String]
     },
     followers: [
       {
