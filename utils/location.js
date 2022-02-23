@@ -1,7 +1,7 @@
 const axios = require('axios').default;
 const AppError = require('./appError');
 
-const API_KEY = '******************************';
+const API_KEY = 'AIzaSyB1g5KDjBmWSIgw3ze-K97GeFtzG04_PAI';
 
 const getCoordsForAddress = async address => {
   const res = await axios({
