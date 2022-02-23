@@ -102,7 +102,7 @@ const RightBar = props => {
                   </Link>
                   <button
                     className="btn btn__follow"
-                    onClick={handleFollowClick.bind(this, friend._id)}
+                    onClick={handleFollowClick.bind(null, friend._id)}
                   >
                     {user.following.some(p => p._id === friend._id)
                       ? 'Unfollow'

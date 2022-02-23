@@ -2,15 +2,15 @@ import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { postActions } from './postSlice';
 
-let activeHttpRequests = [];
-
 export const initializeUser = createAsyncThunk(
   'auth/initializeUser',
   async ({ token }, thunkAPI) => {
     try {
+      const controller = new AbortController();
       const res = await axios({
         method: 'GET',
         url: 'http://localhost:8000/api/users',
+        signal: controller.signal,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -29,7 +29,6 @@ export const login = createAsyncThunk(
   async ({ email, password }, thunkAPI) => {
     try {
       const controller = new AbortController();
-      activeHttpRequests.push(controller);
       const res = await axios({
         method: 'POST',
         signal: controller.signal,
@@ -42,9 +41,9 @@ export const login = createAsyncThunk(
           password,
         },
       });
-      activeHttpRequests = activeHttpRequests.filter(
-        signal => signal !== controller
-      );
+      thunkAPI.signal.addEventListener('abort', () => {
+        controller.abort();
+      });
       const data = await res.data;
       if (res.data.status === 'error' || res.data.status === 'fail') {
         throw new Error(res.data.message);
@@ -59,6 +58,7 @@ export const login = createAsyncThunk(
       thunkAPI.dispatch(postActions.setPosts({ posts: data.user.posts }));
       return data;
     } catch (err) {
+      if (err === 'AbortError') thunkAPI.rejectWithValue('Request Aborted');
       return thunkAPI.rejectWithValue(err.response.data.message);
     }
   }

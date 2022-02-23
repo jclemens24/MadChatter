@@ -1,4 +1,4 @@
-import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { makeAPost } from './postThunks';
 
 const initialPostState = {
@@ -15,7 +15,7 @@ const postSlice = createSlice({
       state.posts.push(...action.payload.posts);
       state.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     },
-    clearPosts(state) {
+    clearPosts() {
       return initialPostState;
     },
   },

@@ -14,7 +14,7 @@ import { logout } from '../slices/authActions';
 import { useNavigate } from 'react-router-dom';
 
 const TopBar = props => {
-  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn ?? null);
   const userId = useSelector(state => state.auth.user?._id);
   const navigate = useNavigate();
   const dispatch = useDispatch();

@@ -4,13 +4,14 @@ import RightBar from '../components/RightBar';
 import UserFeed from '../components/UserFeed';
 import './FriendProfile.css';
 import { useParams } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useHttp } from '../hooks/useHttp';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
 import { selectFriendById } from '../slices/authSlice';
 
-const FriendProfile = props => {
+const FriendProfile = () => {
   const { userId } = useParams();
   const token = useSelector(state => state.auth.token);
   const [posts, setPosts] = useState([]);
@@ -24,6 +25,9 @@ const FriendProfile = props => {
         {
           Authorization: `Bearer ${token}`,
         }
+      );
+      res.user.posts.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
       setPosts(res.user.posts);
     };
@@ -69,6 +73,7 @@ const FriendProfile = props => {
             <RightBar user={friendProfile} />
           </div>
         </div>
+        <Outlet />
       </div>
     </React.Fragment>
   );

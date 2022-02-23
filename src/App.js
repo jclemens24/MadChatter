@@ -36,7 +36,9 @@ function App() {
             <Route path="photos" element={<Photos />} />
           </Route>
           <Route path="/messenger" element={<Messenger />} />
-          <Route path="/:userId/profile/friend" element={<FriendProfile />} />
+          <Route path="/:userId/profile/friend" element={<FriendProfile />}>
+            <Route path="photos" element={<Photos />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>

@@ -10,6 +10,7 @@ import ErrorModal from '../UI/ErrorModal';
 
 export default function PhotoItem(props) {
   const token = useSelector(state => state.auth.token);
+  const authUser = useSelector(state => state.auth.user);
   const dispatch = useDispatch();
   const { userId } = useParams();
   const { loading, error, sendRequest, clearError } = useHttp();
@@ -36,26 +37,32 @@ export default function PhotoItem(props) {
         <div className="photo-image">
           <img
             className="images"
-            src={`http://localhost:8000/${props.photo}`}
+            src={
+              props.photo.startsWith('https')
+                ? `${props.photo}`
+                : `http://localhost:8000/${props.photo}`
+            }
             alt=""
           />
         </div>
-        <div className="photo-actions">
-          <button
-            type="button"
-            className="btn photo-actions"
-            onClick={handlePictureSubmit.bind(null, props.key)}
-          >
-            Set As...
-          </button>
-          <button
-            type="button"
-            className="btn photo-actions"
-            onClick={handlePictureDelete}
-          >
-            Delete
-          </button>
-        </div>
+        {authUser._id === userId && (
+          <div className="photo-actions">
+            <button
+              type="button"
+              className="btn photo-actions"
+              onClick={handlePictureSubmit.bind(null, props.photo)}
+            >
+              Set As...
+            </button>
+            <button
+              type="button"
+              className="btn photo-actions"
+              onClick={handlePictureDelete}
+            >
+              Delete
+            </button>
+          </div>
+        )}
       </Card>
     </li>
   );
