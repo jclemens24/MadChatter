@@ -1,3 +1,5 @@
+const sharp = require('sharp');
+const uuid = require('uuid').v4;
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
@@ -137,5 +139,39 @@ exports.setUserPhoto = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     user: updatePhoto
+  });
+});
+
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+  const filename = `user-${uuid()}.jpeg`;
+  req.file.filename = filename;
+
+  await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/images/${req.file.filename}`);
+
+  next();
+});
+
+exports.uploadUserPhoto = catchAsync(async (req, res, next) => {
+  const image = req.file.filename;
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      profilePic: image,
+      $push: {
+        photos: image
+      }
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    photo: user.profilePic
   });
 });

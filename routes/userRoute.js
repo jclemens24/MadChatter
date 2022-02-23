@@ -1,6 +1,7 @@
 const express = require('express');
 const authController = require('../controller/authController');
 const userController = require('../controller/userController');
+const upload = require('../middleware/fileUpload');
 
 const router = express.Router();
 
@@ -13,7 +14,12 @@ router.get('/:lnglat', userController.suggestFriends);
 router
   .route('/:userId/photos')
   .get(userController.getUserPhotos)
-  .put(userController.setUserPhoto);
+  .put(userController.setUserPhoto)
+  .post(
+    upload.single('image'),
+    userController.resizeUserPhoto,
+    userController.uploadUserPhoto
+  );
 
 router
   .route('/:userId/friends')

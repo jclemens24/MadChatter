@@ -10,11 +10,10 @@ router.put('/:postId/like', postController.likeAPost);
 router.put('/:postId/dislike', postController.dislikeAPost);
 router
   .route('/')
-  .get(postController.getUserPosts)
+  .get(postController.getAllPosts)
   .post(
     upload.single('image'),
     postController.resizePostPhoto,
     postController.createANewPost
   );
-
 module.exports = router;

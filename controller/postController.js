@@ -5,23 +5,12 @@ const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
-exports.getUserPosts = catchAsync(async (req, res, next) => {
-  const posts = await Post.find({ userId: req.user._id });
-  if (!posts) return next(new AppError('User has no posts to display', 400));
+exports.getAllPosts = catchAsync(async (req, res, next) => {
+  const posts = await Post.find({});
 
   res.status(200).json({
     status: 'success',
     posts
-  });
-});
-
-exports.getAPost = catchAsync(async (req, res, next) => {
-  const { postId } = req.params;
-  const updatePost = await Post.findById(postId);
-
-  res.status(200).json({
-    status: 'success',
-    post: updatePost
   });
 });
 
