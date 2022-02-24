@@ -176,7 +176,7 @@ const Register = props => {
                 className="login__input"
                 id="birthYear"
                 name="birthYear"
-                placeholder="BirthYear"
+                placeholder="Birth Year"
                 type="number"
               />
 

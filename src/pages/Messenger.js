@@ -95,7 +95,11 @@ const Messenger = () => {
       <div className="messenger">
         <div className="chatMenu">
           <div className="chatMenuWrapper">
-            <input placeholder="Search for friends" className="chatMenuInput" />
+            <input
+              placeholder="Search for friends"
+              className="chatMenuInput"
+              type="text"
+            />
             {conversations &&
               conversations.map(conv => (
                 <div

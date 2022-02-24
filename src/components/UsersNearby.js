@@ -1,6 +1,10 @@
 import './UsersNearby.css';
+import { AddCircle } from '@mui/icons-material';
 
 const UsersNearby = props => {
+  const handleAddFriend = async id => {
+    console.log(id);
+  };
   return (
     <li className="friendsNearbyList">
       <img
@@ -15,6 +19,10 @@ const UsersNearby = props => {
       <h4>
         {props.user.firstName} {props.user.lastName}
       </h4>
+      <AddCircle
+        className="add_icon"
+        onClick={handleAddFriend.bind(null, props.user._id)}
+      />
     </li>
   );
 };

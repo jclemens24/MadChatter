@@ -33,8 +33,6 @@ const Share = props => {
     const chosenFile = event.target.files[0];
     setPreviewUrl(window.URL.createObjectURL(chosenFile));
     setFile(event.target.files[0]);
-    console.log(file);
-    console.log(previewUrl);
   };
   const pickImageHandler = () => {
     filePicker.current.click();

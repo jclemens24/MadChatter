@@ -15,8 +15,9 @@ const FriendProfile = () => {
   const { userId } = useParams();
   const token = useSelector(state => state.auth.token);
   const [posts, setPosts] = useState([]);
+  const [friendProfile, setFriendProfile] = useState({});
   const { loading, error, sendRequest, clearError } = useHttp();
-  const friendProfile = useSelector(state => selectFriendById(state, userId));
+  // const friendProfile = useSelector(state => selectFriendById(state, userId));
   useEffect(() => {
     const fetchFriendsData = async () => {
       const res = await sendRequest(
@@ -26,6 +27,7 @@ const FriendProfile = () => {
           Authorization: `Bearer ${token}`,
         }
       );
+      setFriendProfile(res.user);
       res.user.posts.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
@@ -50,16 +52,12 @@ const FriendProfile = () => {
             <div className="profile__cover-pic">
               <img
                 className="profile__cover-image"
-                src={`${friendProfile.coverPic}`}
+                src={`${friendProfile?.coverPic}`}
                 alt={`${friendProfile.firstName} profile`}
               />
               <img
                 className="profile__user-image"
-                src={
-                  friendProfile.profilePic.startsWith('https')
-                    ? friendProfile.profilePic
-                    : `http://localhost:8000/${friendProfile.profilePic}`
-                }
+                src={`http://localhost:8000/${friendProfile.profilePic}`}
                 alt=""
               />
             </div>

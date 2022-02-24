@@ -49,7 +49,9 @@ const LeftBar = props => {
         <ul className="sidebar__list">
           <li className="sidebar__listitem">
             <RssFeedOutlined className="sidebar__icon" />
-            <span className="sidebar__listitem--text">Feed</span>
+            <Link style={{ textDecoration: 'none' }} to={`/feed`}>
+              <span className="sidebar__listitem--text">Feed</span>
+            </Link>
           </li>
           <li className="sidebar__listitem">
             <ChatBubbleOutlineOutlined className="sidebar__icon" />

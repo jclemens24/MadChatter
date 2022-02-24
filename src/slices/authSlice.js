@@ -20,6 +20,9 @@ const authSlice = createSlice({
         );
       }
     },
+    follow(state, action) {
+      state.user.following.push(action.payload);
+    },
     updateState(state, action) {
       state.user = action.payload.user;
     },
@@ -30,7 +33,7 @@ const authSlice = createSlice({
     updatePhotos(state, action) {
       state.user.photos.push(action.payload);
     },
-    logout(state) {
+    logout() {
       return initialAuthState;
     },
   },
@@ -87,10 +90,11 @@ const authSlice = createSlice({
 
 export const authAction = authSlice.actions;
 
-export default authSlice;
-
 export const selectAllFriends = state => state.auth.user.following;
+
 export const selectFriendById = createSelector(
   [selectAllFriends, (state, userId) => userId],
   (following, userId) => following.find(friend => friend._id === userId)
 );
+
+export default authSlice;
