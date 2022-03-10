@@ -1,10 +1,11 @@
 const sharp = require('sharp');
 const uuid = require('uuid').v4;
+const fs = require('fs');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
-exports.getAUser = catchAsync(async (req, res, next) => {
+exports.validateAUser = catchAsync(async (req, res, next) => {
   const userId = req.user._id;
 
   const user = await User.findById(userId)
@@ -27,34 +28,33 @@ exports.unfollowAndFollowAFriend = catchAsync(async (req, res, next) => {
     return next(new AppError('Request could not be completed', 404));
 
   if (req.query.unfollow === '1') {
-    const updatedUser = await User.findByIdAndUpdate(
+    const friend = await User.findById(userFriend);
+    await User.findByIdAndUpdate(
       { _id: userId },
       {
         $pull: { following: userFriend }
       },
       { new: true }
-    )
-      .populate('following')
-      .populate('posts');
+    );
 
     res.status(200).json({
       status: 'success',
-      user: updatedUser
+      user: friend
     });
   } else if (req.query.unfollow === '0') {
-    const updatedUser = await User.findByIdAndUpdate(
+    const friend = await User.findById(userFriend);
+    if (!friend) return next(new AppError('No results', 400));
+    await User.findByIdAndUpdate(
       { _id: userId },
       {
-        $push: { following: userFriend }
+        $push: { following: friend._id }
       },
-      { new: true }
-    )
-      .populate('following')
-      .populate('posts');
+      { returnDocument: 'after' }
+    );
 
     res.status(200).json({
       status: 'success',
-      user: updatedUser
+      user: friend
     });
   }
 });
@@ -173,5 +173,28 @@ exports.uploadUserPhoto = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     photo: user.profilePic
+  });
+});
+
+exports.deleteUserPhoto = catchAsync(async (req, res, next) => {
+  const photoName = req.params.pid;
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $pull: {
+        photos: photoName
+      }
+    },
+    { new: true }
+  );
+
+  fs.unlink(`${__dirname}/../public/images/${photoName}`, err => {
+    if (err)
+      return next(new AppError('Could not delete that photo, try again', 404));
+  });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Photo has been deleted'
   });
 });

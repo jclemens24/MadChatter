@@ -60,7 +60,6 @@ exports.login = catchAsync(async (req, res, next) => {
     email
   })
     .select('+password')
-    .populate('followers')
     .populate('following')
     .populate('posts');
 

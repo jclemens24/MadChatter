@@ -9,7 +9,7 @@ router.post('/login', authController.login);
 router.post('/signup', authController.signup);
 
 router.use(authController.verifyAuth);
-router.get('/', userController.getAUser);
+router.get('/', userController.validateAUser);
 router.get('/:lnglat', userController.suggestFriends);
 router
   .route('/:userId/photos')
@@ -20,6 +20,8 @@ router
     userController.resizeUserPhoto,
     userController.uploadUserPhoto
   );
+
+router.patch('/photos/:pid', userController.deleteUserPhoto);
 
 router
   .route('/:userId/friends')

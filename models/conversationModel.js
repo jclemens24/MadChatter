@@ -24,7 +24,8 @@ const conversationSchema = new mongoose.Schema(
 conversationSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'members',
-    select: '-__v -passwordConfirm -following -followers'
+    select:
+      '-__v -passwordConfirm -following -followers -photos -location -birthYear -coverPic'
   });
   next();
 });

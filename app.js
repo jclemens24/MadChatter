@@ -1,4 +1,6 @@
 const express = require('express');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -30,6 +32,14 @@ mongoose
 
 // Initialize App
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: 'http://localhost:3000',
+    allowedHeaders: ['Authorization'],
+    credentials: true
+  }
+});
 app.options('*', cors());
 app.use(cors());
 
@@ -56,7 +66,13 @@ app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
+io.on('connection', socket => {
+  socket.on('sendMessage', data => {
+    io.emit('postMessage', data);
+  });
+});
+
 // Server Listening
-app.listen(port, 'localhost', () => {
+httpServer.listen(port, 'localhost', () => {
   console.log(`listening on server port ${port}`);
 });

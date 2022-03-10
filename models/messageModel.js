@@ -35,7 +35,8 @@ messageSchema.pre(/^find/, function (next) {
     select: 'members'
   }).populate({
     path: 'sender',
-    select: '-__v -passwordConfirm'
+    select:
+      '-__v -followers -following -birthYear -coverPic -email -location -photos'
   });
   next();
 });
