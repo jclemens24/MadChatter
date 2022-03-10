@@ -1,7 +1,16 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
-import { initializeUser, login, register } from './authThunks';
+import {
+  addAFriend,
+  initializeUser,
+  login,
+  register,
+  unfollowAFriend,
+} from './authThunks';
 
 const initialAuthState = {
+  user: null,
+  token: null,
+  isLoggedIn: false,
   status: 'idle',
 };
 
@@ -33,6 +42,11 @@ const authSlice = createSlice({
     updatePhotos(state, action) {
       state.user.photos.push(action.payload);
     },
+    deleteAPhoto(state, action) {
+      state.user.photos = state.user.photos.filter(
+        pic => pic !== action.payload
+      );
+    },
     logout() {
       return initialAuthState;
     },
@@ -44,7 +58,6 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       delete state.user.posts;
       state.isLoggedIn = !!state.token;
-      return state;
     },
     [login.pending]: state => {
       state.status = 'pending';
@@ -61,7 +74,6 @@ const authSlice = createSlice({
       state.user = user;
       delete state.user.posts;
       state.isLoggedIn = true;
-      return state;
     },
     [register.pending]: state => {
       state.status = 'pending';
@@ -76,7 +88,6 @@ const authSlice = createSlice({
       state.token = action.payload.token;
       state.isLoggedIn = true;
       state.status = 'success';
-      return state;
     },
     [initializeUser.pending]: state => {
       state.status = 'pending';
@@ -84,17 +95,40 @@ const authSlice = createSlice({
     [initializeUser.rejected]: (state, action) => {
       state.status = 'failed';
       state.errorMessage = action.payload;
+      state.isLoggedIn = false;
+      state.token = null;
+    },
+    [addAFriend.fulfilled]: (state, action) => {
+      state.status = 'success';
+      state.user.following.push(action.payload.user);
+    },
+    [addAFriend.pending]: (state, action) => {
+      state.status = 'pending';
+    },
+    [addAFriend.rejected]: (state, action) => {
+      state.status = 'failed';
+      state.errorMessage = action.payload;
+    },
+    [unfollowAFriend.fulfilled]: (state, action) => {
+      state.status = 'success';
+      state.user.following = state.user.following.filter(
+        friend => friend._id !== action.payload.user._id
+      );
+    },
+    [unfollowAFriend.pending]: state => {
+      state.status = 'pending';
+    },
+    [unfollowAFriend.rejected]: (state, action) => {
+      state.status = 'failed';
+      state.errorMessage = action.payload;
     },
   },
 });
 
-export const authAction = authSlice.actions;
+export const userToken = state => state.auth.token;
 
 export const selectAllFriends = state => state.auth.user.following;
 
-export const selectFriendById = createSelector(
-  [selectAllFriends, (state, userId) => userId],
-  (following, userId) => following.find(friend => friend._id === userId)
-);
+export const authAction = authSlice.actions;
 
 export default authSlice;

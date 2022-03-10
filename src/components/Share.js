@@ -10,9 +10,10 @@ import { useSelector } from 'react-redux';
 import './Share.css';
 import { makeAPost } from '../slices/postThunks';
 import { useDispatch } from 'react-redux';
+import { userToken } from '../slices/authSlice';
 
 const Share = props => {
-  const token = useSelector(state => state.auth.token);
+  const token = useSelector(userToken);
   const desc = useRef();
   const filePicker = useRef();
   const dispatch = useDispatch();

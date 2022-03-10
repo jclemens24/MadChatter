@@ -6,17 +6,15 @@ import { format } from 'timeago.js';
 import { useHttp } from '../hooks/useHttp';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
+import { userToken } from '../slices/authSlice';
 import './Posts.css';
 
 export default function Post(props) {
   const [numOfLikes, setNumOfLikes] = useState(props.post?.likes.length);
   const [isLiked, setIsLiked] = useState();
-  const token = useSelector(state => state.auth.token);
+  const token = useSelector(userToken);
   const authUser = useSelector(state => state.auth.user);
   const { loading, error, sendRequest, clearError } = useHttp();
-  const picture = props.user.profilePic.startsWith('http')
-    ? `${props.user.profilePic}`
-    : `http://localhost:8000/${props.user.profilePic}`;
 
   useEffect(() => {
     if (props.post.likes.some(p => p._id === authUser._id)) setIsLiked(true);
@@ -59,8 +57,18 @@ export default function Post(props) {
       <div className="postWrapper">
         <div className="postTop">
           <div className="postTopLeft">
-            <Link to={`/${props.user._id}/profile`}>
-              <img className="postProfileImg" src={picture} alt="" />
+            <Link
+              to={
+                props.user._id === authUser._id
+                  ? `/${props.user._id}/profile`
+                  : `/${props.user._id}/profile/friend`
+              }
+            >
+              <img
+                className="postProfileImg"
+                src={`http://localhost:8000/${props.user.profilePic}`}
+                alt=""
+              />
             </Link>
             <span className="postUsername">{`${props.user.firstName} ${props.user.lastName}`}</span>
             <span className="postDate">{format(props.post.createdAt)}</span>

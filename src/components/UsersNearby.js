@@ -1,9 +1,16 @@
 import './UsersNearby.css';
 import { AddCircle } from '@mui/icons-material';
+import { addAFriend } from '../slices/authThunks';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { userToken } from '../slices/authSlice';
 
 const UsersNearby = props => {
+  const token = useSelector(userToken);
+  const authUser = useSelector(state => state.auth.user);
+  const dispatch = useDispatch();
   const handleAddFriend = async id => {
-    console.log(id);
+    dispatch(addAFriend({ id, userId: authUser._id, token }));
   };
   return (
     <li className="friendsNearbyList">

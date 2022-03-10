@@ -58,12 +58,20 @@
   color: #fff;
 }
 
+.topbar__links:first-child {
+  margin-left: 10px;
+}
+
 .topbar__link {
   margin-right: 10px;
   font-size: 14px;
   cursor: pointer;
   text-decoration: none;
   color: #fff;
+}
+
+.topbar__link:hover {
+  transform: scale(1.1, 1.1);
 }
 
 .topbar__icons {

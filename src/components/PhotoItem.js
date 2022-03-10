@@ -5,11 +5,12 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { authAction } from '../slices/authSlice';
+import { userToken } from '../slices/authSlice';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
 
 export default function PhotoItem(props) {
-  const token = useSelector(state => state.auth.token);
+  const token = useSelector(userToken);
   const authUser = useSelector(state => state.auth.user);
   const dispatch = useDispatch();
   const { userId } = useParams();
@@ -25,7 +26,15 @@ export default function PhotoItem(props) {
     dispatch(authAction.setProfilePic({ photo: props.photo }));
     props.onClear();
   };
-  const handlePictureDelete = () => {};
+  const handlePictureDelete = async () => {
+    await sendRequest(
+      `http://localhost:8000/api/users/photos/${props.photo}`,
+      'PATCH',
+      { Authorization: `Bearer ${token}` }
+    );
+    dispatch(authAction.deleteAPhoto(props.photo));
+    props.onClear();
+  };
 
   if (error) {
     return <ErrorModal error={error} onClear={clearError} />;

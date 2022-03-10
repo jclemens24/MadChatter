@@ -18,9 +18,10 @@ import { useSelector } from 'react-redux';
 import UsersNearby from './UsersNearby';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
+import { userToken } from '../slices/authSlice';
 
 const LeftBar = props => {
-  const token = useSelector(state => state.auth.token);
+  const token = useSelector(userToken);
   const authUser = useSelector(state => state.auth.user);
   const [nearbyFriends, setNearbyFriends] = useState([]);
   const { loading, error, sendRequest, clearError } = useHttp();
@@ -37,6 +38,7 @@ const LeftBar = props => {
       } catch (err) {}
     };
     getNearbyFriends();
+    return () => {};
   }, [sendRequest, authUser.location.coordinates, token, props.user._id]);
 
   if (error) {
@@ -102,7 +104,7 @@ const LeftBar = props => {
         <h4>People You May Know</h4>
         <ul className="sidebarFriendList">
           {loading && <LoadingSpinner asOverlay />}
-          {nearbyFriends.map(friend => (
+          {nearbyFriends?.map(friend => (
             <UsersNearby key={friend._id} user={friend} />
           ))}
         </ul>

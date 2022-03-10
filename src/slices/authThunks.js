@@ -105,3 +105,55 @@ export const register = createAsyncThunk(
     }
   }
 );
+
+export const addAFriend = createAsyncThunk(
+  'auth/addAFriend',
+  async ({ id, userId, token }, thunkAPI) => {
+    try {
+      const res = await axios({
+        method: 'PATCH',
+        url: `http://localhost:8000/api/users/${userId}/friends?unfollow=0`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        data: {
+          id,
+        },
+      });
+      const data = await res.data;
+      if (res.data.status === 'fail' || res.data.status === 'error') {
+        throw new Error(res.data.message);
+      }
+      return data;
+    } catch (err) {
+      thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  }
+);
+
+export const unfollowAFriend = createAsyncThunk(
+  'auth/unfollowAFriend',
+  async ({ id, userId, token }, thunkAPI) => {
+    try {
+      const res = await axios({
+        method: 'PATCH',
+        url: `http://localhost:8000/api/users/${userId}/friends?unfollow=1`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        data: {
+          id,
+        },
+      });
+      const data = await res.data;
+      if (res.data.status === 'fail' || res.data.status === 'error') {
+        throw new Error(res.data.message);
+      }
+      return data;
+    } catch (err) {
+      thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  }
+);

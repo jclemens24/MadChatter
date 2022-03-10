@@ -9,15 +9,15 @@ import { useSelector } from 'react-redux';
 import { useHttp } from '../hooks/useHttp';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
-import { selectFriendById } from '../slices/authSlice';
+import { userToken } from '../slices/authSlice';
 
 const FriendProfile = () => {
   const { userId } = useParams();
-  const token = useSelector(state => state.auth.token);
+  const token = useSelector(userToken);
   const [posts, setPosts] = useState([]);
-  const [friendProfile, setFriendProfile] = useState({});
+  const [friendProfile, setFriendProfile] = useState([]);
   const { loading, error, sendRequest, clearError } = useHttp();
-  // const friendProfile = useSelector(state => selectFriendById(state, userId));
+
   useEffect(() => {
     const fetchFriendsData = async () => {
       const res = await sendRequest(
@@ -27,11 +27,11 @@ const FriendProfile = () => {
           Authorization: `Bearer ${token}`,
         }
       );
-      setFriendProfile(res.user);
       res.user.posts.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
       setPosts(res.user.posts);
+      setFriendProfile(res.user);
     };
     fetchFriendsData();
   }, [userId, token, sendRequest]);

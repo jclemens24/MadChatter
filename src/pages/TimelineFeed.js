@@ -6,9 +6,10 @@ import { useSelector } from 'react-redux';
 import { useHttp } from '../hooks/useHttp';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
+import { userToken } from '../slices/authSlice';
 
 const TimelineFeed = props => {
-  const token = useSelector(state => state.auth.token);
+  const token = useSelector(userToken);
   const authUser = useSelector(state => state.auth.user);
   const [allPosts, setAllPosts] = useState([]);
   const { loading, error, sendRequest, clearError } = useHttp();
@@ -24,6 +25,11 @@ const TimelineFeed = props => {
     };
     fetchAllPosts();
   }, [sendRequest, token]);
+
+  useEffect(() => {
+    const storage = localStorage.getItem('feed');
+    if (storage) setAllPosts(JSON.parse(storage));
+  }, []);
 
   if (loading) {
     return <LoadingSpinner asOverlay />;

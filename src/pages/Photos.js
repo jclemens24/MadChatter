@@ -8,13 +8,14 @@ import PhotoModal from '../UI/PhotoModal';
 import './Photos.css';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
+import { userToken } from '../slices/authSlice';
 
 export default function Photos() {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(true);
   const [photos, setPhotos] = useState([]);
-  const token = useSelector(state => state.auth.token);
+  const token = useSelector(userToken);
   const authUser = useSelector(state => state.auth.user);
   const { loading, error, sendRequest, clearError } = useHttp();
 

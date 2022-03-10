@@ -2,52 +2,24 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Remove, Add } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import './RightBar.css';
-import { authAction } from '../slices/authSlice';
 import Online from './Online';
+import { addAFriend } from '../slices/authThunks';
+import { unfollowAFriend } from '../slices/authThunks';
+import { userToken } from '../slices/authSlice';
 
 const RightBar = props => {
   const user = useSelector(state => state.auth.user);
-  const token = useSelector(state => state.auth.token);
+  const token = useSelector(userToken);
+
   const dispatch = useDispatch();
 
-  const handleFollowClick = async id => {
+  const handleFollowClick = id => {
     const alreadyFriended = user.following.find(friend => friend._id === id);
     if (alreadyFriended) {
-      try {
-        dispatch(authAction.unfollow({ id }));
-        const res = await axios({
-          method: 'PATCH',
-          url: `http://localhost:8000/api/users/${user._id}/friends?unfollow=1`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          data: {
-            id,
-          },
-        });
-        const data = await res.data;
-        dispatch(authAction.updateState({ user: data.user }));
-        console.log(data);
-      } catch (err) {}
+      dispatch(unfollowAFriend({ id, userId: user._id, token }));
     } else {
-      try {
-        const res = await axios({
-          method: 'PATCH',
-          url: `http://localhost:8000/api/users/${user._id}/friends?unfollow=0`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          data: {
-            id,
-          },
-        });
-        const data = await res.data;
-        dispatch(authAction.updateState({ user: data.user }));
-      } catch (err) {}
+      dispatch(addAFriend({ id, userId: user._id, token }));
     }
   };
 
@@ -59,7 +31,9 @@ const RightBar = props => {
           <div className="rightbar__info--item">
             <span className="rightbar__info--key">Age:</span>
             <span className="rightbar__info--value">
-              {new Date().getFullYear() - props.user.birthYear}
+              {(new Date().getFullYear() - props.user.birthYear).toLocaleString(
+                'en-US'
+              )}
             </span>
           </div>
           <div className="rightbar__info--item">

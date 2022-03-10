@@ -5,38 +5,67 @@ import { useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Conversation from '../components/Conversation';
 import ChatOnline from '../components/ChatOnline';
+import { useHttp } from '../hooks/useHttp';
+import { userToken } from '../slices/authSlice';
+import LoadingSpinner from '../UI/LoadingSpinner';
+import ErrorModal from '../UI/ErrorModal';
+import { io } from 'socket.io-client';
+import { v4 } from 'uuid';
 
 const Messenger = () => {
+  const authUser = useSelector(state => state.auth.user);
+  const token = useSelector(userToken);
   const [conversations, setConversations] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
-  const authUser = useSelector(state => state.auth.user);
-  const token = useSelector(state => state.auth.token);
+  const { loading, error, sendRequest, clearError } = useHttp();
+  const socket = useRef();
   const scrollRef = useRef();
 
   useEffect(() => {
     const getConversations = async () => {
-      try {
-        const res = await axios({
-          method: 'GET',
-          url: `http://localhost:8000/api/conversations`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.data;
-        console.log(data);
-        setConversations(data.conversations);
-        console.log(conversations);
-      } catch (err) {
-        console.log(err.response.data.message);
-      }
+      const res = await sendRequest(
+        `http://localhost:8000/api/conversations`,
+        'GET',
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
+      setConversations(res.conversations);
     };
     getConversations();
-  }, [conversations, token]);
+  }, [token, sendRequest]);
+
+  useEffect(() => {
+    socket.current = io('http://localhost:8000', {
+      withCredentials: true,
+      extraHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    socket.current.on('postMessage', data => {
+      console.log(data);
+      setArrivalMessage({
+        sender: data.sender,
+        text: data.text,
+        createdAt: Date.now(),
+      });
+    });
+    setMessages(prevMessages => {
+      return [...prevMessages, arrivalMessage];
+    });
+  }, [token, arrivalMessage]);
+
+  // useEffect(() => {
+  //   arrivalMessage &&
+  //     setMessages(prevMessages => {
+  //       return [...prevMessages, arrivalMessage];
+  //     });
+  //   setArrivalMessage(null);
+  // }, [arrivalMessage]);
 
   const getCurrentChatroom = async id => {
     try {
@@ -66,6 +95,12 @@ const Messenger = () => {
       recieverId: recieverId._id,
     };
 
+    socket.current.emit('sendMessage', {
+      sender: authUser,
+      recieverId,
+      text: newMessage,
+    });
+
     try {
       const res = await axios({
         method: 'POST',
@@ -89,6 +124,14 @@ const Messenger = () => {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  if (loading) {
+    return <LoadingSpinner asOverlay />;
+  }
+
+  if (error) {
+    return <ErrorModal error={error} onClear={clearError} />;
+  }
 
   return (
     <React.Fragment>
@@ -116,6 +159,14 @@ const Messenger = () => {
             {currentChat ? (
               <>
                 <div className="chatBoxTop">
+                  {arrivalMessage && (
+                    <div ref={scrollRef}>
+                      <Message
+                        message={arrivalMessage}
+                        own={arrivalMessage.sender === authUser._id}
+                      />
+                    </div>
+                  )}
                   {messages.map(m => (
                     <div key={m._id} ref={scrollRef}>
                       <Message
@@ -126,12 +177,12 @@ const Messenger = () => {
                   ))}
                 </div>
                 <div className="chatBoxBottom">
-                  <textarea
+                  <input
                     className="chatMessageInput"
                     placeholder="Start Typing..."
                     onChange={e => setNewMessage(e.target.value)}
                     value={newMessage}
-                  ></textarea>
+                  ></input>
                   <button
                     className="chatSubmitButton"
                     onClick={handleMessageSubmit}

@@ -12,12 +12,13 @@ import Modal from '../UI/Modal';
 import { useHttp } from '../hooks/useHttp';
 import ErrorModal from '../UI/ErrorModal';
 import { authAction } from '../slices/authSlice';
+import { userToken } from '../slices/authSlice';
 
 const Profile = props => {
-  const authUser = useSelector(state => state.auth.user);
-  const token = useSelector(state => state.auth.token);
-  const posts = useSelector(state => state.post.posts);
   const dispatch = useDispatch();
+  const authUser = useSelector(state => state.auth.user);
+  const token = useSelector(userToken);
+  const posts = useSelector(state => state.post.posts);
   const { loading, error, sendRequest, clearError } = useHttp();
   const { status } = useSelector(state => state.auth);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -48,7 +49,7 @@ const Profile = props => {
     dispatch(authAction.updatePhotos(res.photo));
   };
 
-  if (status === 'pending') {
+  while (status === 'pending') {
     return <LoadingSpinner asOverlay />;
   }
 
@@ -82,14 +83,10 @@ const Profile = props => {
                 <label className="visually-hidden__label" htmlFor="image">
                   <PhotoCamera />
                 </label>
-                {!previewUrl && (
+                {!file && (
                   <img
                     className="profile__user-image"
-                    src={
-                      authUser.profilePic.startsWith('https')
-                        ? `${authUser.profilePic}`
-                        : `http://localhost:8000/${authUser.profilePic}`
-                    }
+                    src={`http://localhost:8000/${authUser.profilePic}`}
                     alt=""
                   />
                 )}

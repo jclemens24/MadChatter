@@ -13,7 +13,7 @@ import { useDispatch } from 'react-redux';
 import { logout } from '../slices/authActions';
 import { useNavigate } from 'react-router-dom';
 
-const TopBar = props => {
+const TopBar = () => {
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn ?? null);
   const userId = useSelector(state => state.auth.user?._id);
   const navigate = useNavigate();
@@ -44,11 +44,23 @@ const TopBar = props => {
       {isLoggedIn && (
         <div className="topbar__right">
           <div className="topbar__links">
-            <NavLink className="topbar__link" to={`${userId}/profile`}>
-              <span className="topbar__link">Home</span>
+            <NavLink
+              className="topbar__link"
+              style={({ isActive }) => ({
+                textDecoration: isActive ? 'underline' : '',
+              })}
+              to={`${userId}/profile`}
+            >
+              Home
             </NavLink>
-            <NavLink className="topbar__link" to={`/feed`}>
-              <span className="topbar__link">Timeline</span>
+            <NavLink
+              style={({ isActive }) => ({
+                textDecoration: isActive ? 'underline' : '',
+              })}
+              className="topbar__link"
+              to={`/feed`}
+            >
+              Timeline
             </NavLink>
           </div>
           <div className="topbar__icons">

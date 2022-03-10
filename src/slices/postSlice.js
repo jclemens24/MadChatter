@@ -5,6 +5,7 @@ const initialPostState = {
   posts: [],
   status: 'idle',
   errorMessage: '',
+  timelineFeed: [],
 };
 
 const postSlice = createSlice({
@@ -24,6 +25,7 @@ const postSlice = createSlice({
       state.status = 'success';
       const { post } = action.payload;
       state.posts.push(post);
+      state.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       return state;
     },
     [makeAPost.pending]: (state, action) => {

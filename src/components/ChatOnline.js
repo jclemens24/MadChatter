@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { userToken } from '../slices/authSlice';
 import axios from 'axios';
 import './ChatOnline.css';
 
 export default function ChatOnline(props) {
   const [friends, setFriends] = useState([]);
   const [onlineFriends, setOnlineFriends] = useState([]);
-  const token = useSelector(state => state.auth.token);
+  const token = useSelector(userToken);
 
   useEffect(() => {
     setFriends(props.user.following);
