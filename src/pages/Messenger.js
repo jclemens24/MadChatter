@@ -10,7 +10,7 @@ import { userToken } from '../slices/authSlice';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
 import { io } from 'socket.io-client';
-import { v4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 const Messenger = () => {
   const authUser = useSelector(state => state.auth.user);
@@ -19,11 +19,40 @@ const Messenger = () => {
   const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [arrivalMessage, setArrivalMessage] = useState({});
   const [onlineUsers, setOnlineUsers] = useState([]);
   const { loading, error, sendRequest, clearError } = useHttp();
   const socket = useRef();
   const scrollRef = useRef();
+
+  useEffect(() => {
+    socket.current = io('http://localhost:8000', {
+      withCredentials: true,
+      extraHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    socket.current.on('postMessage', data => {
+      console.log(data);
+      setArrivalMessage({
+        sender: data.sender,
+        text: data.text,
+        createdAt: Date.now(),
+      });
+    });
+  }, [token, arrivalMessage]);
+
+  useEffect(() => {
+    arrivalMessage &&
+      setMessages(prevMessages => {
+        return [...prevMessages, arrivalMessage];
+      });
+  }, [arrivalMessage]);
+
+  useEffect(() => {
+    socket.current.emit('addUser', authUser);
+  }, [authUser]);
 
   useEffect(() => {
     const getConversations = async () => {
@@ -39,86 +68,46 @@ const Messenger = () => {
     getConversations();
   }, [token, sendRequest]);
 
-  useEffect(() => {
-    socket.current = io('http://localhost:8000', {
-      withCredentials: true,
-      extraHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    socket.current.on('postMessage', data => {
-      console.log(data);
-      setArrivalMessage({
-        sender: data.sender,
-        text: data.text,
-        createdAt: Date.now(),
-      });
-    });
-    setMessages(prevMessages => {
-      return [...prevMessages, arrivalMessage];
-    });
-  }, [token, arrivalMessage]);
-
-  // useEffect(() => {
-  //   arrivalMessage &&
-  //     setMessages(prevMessages => {
-  //       return [...prevMessages, arrivalMessage];
-  //     });
-  //   setArrivalMessage(null);
-  // }, [arrivalMessage]);
-
   const getCurrentChatroom = async id => {
-    try {
-      const res = await axios({
-        method: 'GET',
-        url: `http://localhost:8000/api/messages/${id}`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await res.data;
-      console.log(data);
-      setMessages(data.messages);
-      setCurrentChat(data.messages);
-    } catch (err) {}
+    const res = await axios({
+      url: `http://localhost:8000/api/messages/${id}`,
+      method: 'GET',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.data;
+    console.log(data.messages);
+    setMessages(data.messages);
+    setCurrentChat(data.messages[0].conversationId);
   };
 
   const handleMessageSubmit = async event => {
     event.preventDefault();
-    const recieverId = currentChat[0].conversationId.members.find(
+    const reciever = currentChat.members.find(
       member => member._id !== authUser._id
     );
     const message = {
       senderId: authUser._id,
       text: newMessage,
-      conversationId: currentChat[0].conversationId._id,
-      recieverId: recieverId._id,
+      conversationId: currentChat._id,
     };
 
     socket.current.emit('sendMessage', {
       sender: authUser,
-      recieverId,
+      reciever: reciever,
       text: newMessage,
     });
 
-    try {
-      const res = await axios({
-        method: 'POST',
-        url: `http://localhost:8000/api/messages`,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        data: message,
-      });
-      const data = await res.data;
-      setMessages(prevMessages => {
-        return [...prevMessages, data.messages];
-      });
-      setNewMessage('');
-    } catch (err) {
-      console.log(err.response.data.message);
-    }
+    const res = await sendRequest(
+      `http://localhost:8000/api/messages`,
+      'POST',
+      {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      message
+    );
+    setMessages([...messages, res.messages]);
+    setNewMessage('');
   };
 
   useEffect(() => {
@@ -159,22 +148,16 @@ const Messenger = () => {
             {currentChat ? (
               <>
                 <div className="chatBoxTop">
-                  {arrivalMessage && (
-                    <div ref={scrollRef}>
-                      <Message
-                        message={arrivalMessage}
-                        own={arrivalMessage.sender === authUser._id}
-                      />
-                    </div>
-                  )}
-                  {messages.map(m => (
-                    <div key={m._id} ref={scrollRef}>
-                      <Message
-                        message={m}
-                        own={m.sender._id === authUser._id}
-                      />
-                    </div>
-                  ))}
+                  {messages &&
+                    messages.map(m => (
+                      <div key={uuidv4()} ref={scrollRef}>
+                        <Message
+                          message={m}
+                          own={authUser._id === m.sender._id}
+                          picture={m.sender}
+                        />
+                      </div>
+                    ))}
                 </div>
                 <div className="chatBoxBottom">
                   <input
