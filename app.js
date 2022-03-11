@@ -40,9 +40,9 @@ const io = new Server(httpServer, {
     credentials: true
   }
 });
+
 app.options('*', cors());
 app.use(cors());
-
 // Server Port
 const port = 8000 || process.env.PORT;
 
@@ -66,9 +66,37 @@ app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
+const users = [];
+console.log(users);
+
+const addUser = (userId, socketId) => {
+  const exists = users.some(user => user.userId === userId);
+  if (exists) return;
+  users.push({ userId, socketId });
+};
+
+// const removeUser = socketId => {
+//   users.filter(user => user.socketId !== socketId);
+// };
+
+const getUser = userId => {
+  return users.find(user => user.userId === userId);
+};
+
 io.on('connection', socket => {
-  socket.on('sendMessage', data => {
-    io.emit('postMessage', data);
+  console.log('a user is connected');
+  socket.on('addUser', user => {
+    console.log(user);
+    addUser(user._id, socket.id);
+    console.log(users);
+  });
+
+  socket.on('sendMessage', ({ sender, reciever, text }) => {
+    const user = getUser(reciever._id);
+    socket.to(user.socketId).emit('postMessage', {
+      sender,
+      text
+    });
   });
 });
 
@@ -76,3 +104,5 @@ io.on('connection', socket => {
 httpServer.listen(port, 'localhost', () => {
   console.log(`listening on server port ${port}`);
 });
+
+module.exports = httpServer;
