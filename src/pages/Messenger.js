@@ -11,6 +11,7 @@ import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
 import { io } from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
+import { DoneAll } from '@mui/icons-material';
 
 const Messenger = () => {
   const authUser = useSelector(state => state.auth.user);
@@ -24,6 +25,7 @@ const Messenger = () => {
   const { loading, error, sendRequest, clearError } = useHttp();
   const socket = useRef();
   const scrollRef = useRef();
+  const { _id, firstName } = authUser;
 
   useEffect(() => {
     socket.current = io('http://localhost:8000', {
@@ -31,28 +33,49 @@ const Messenger = () => {
       extraHeaders: {
         Authorization: `Bearer ${token}`,
       },
+      auth: {
+        _id: _id,
+        userId: _id,
+        username: firstName,
+      },
     });
 
-    socket.current.on('postMessage', data => {
+    socket.current.on('session', ({ sessionId, userId }) => {
+      socket.current.auth = { sessionId };
+
+      localStorage.setItem('sessionId', sessionId);
+
+      socket.current.userId = userId;
+    });
+
+    socket.current.on('private message', data => {
       console.log(data);
       setArrivalMessage({
-        sender: data.sender,
-        text: data.text,
+        sender: data.from,
+        text: data.content,
+        reciever: data.to,
         createdAt: Date.now(),
       });
     });
-  }, [token, arrivalMessage]);
+    return () => {
+      socket.current.close();
+    };
+  }, [token, messages, _id, firstName, authUser]);
 
   useEffect(() => {
-    arrivalMessage &&
-      setMessages(prevMessages => {
-        return [...prevMessages, arrivalMessage];
-      });
+    const sessionId = localStorage.getItem('sessionId');
+
+    if (sessionId) {
+      socket.current.auth = { sessionId };
+      socket.current.connect();
+    }
+  }, []);
+
+  useEffect(() => {
+    setMessages(prevMessages => {
+      return [...prevMessages, arrivalMessage];
+    });
   }, [arrivalMessage]);
-
-  useEffect(() => {
-    socket.current.emit('addUser', authUser);
-  }, [authUser]);
 
   useEffect(() => {
     const getConversations = async () => {
@@ -75,9 +98,9 @@ const Messenger = () => {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.data;
-    console.log(data.messages);
     setMessages(data.messages);
     setCurrentChat(data.messages[0].conversationId);
+    scrollRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleMessageSubmit = async event => {
@@ -86,15 +109,15 @@ const Messenger = () => {
       member => member._id !== authUser._id
     );
     const message = {
-      senderId: authUser._id,
+      sender: authUser._id,
       text: newMessage,
       conversationId: currentChat._id,
     };
 
-    socket.current.emit('sendMessage', {
-      sender: authUser,
-      reciever: reciever,
-      text: newMessage,
+    socket.current.emit('private message', {
+      to: reciever,
+      content: newMessage,
+      from: authUser,
     });
 
     const res = await sendRequest(
@@ -106,7 +129,9 @@ const Messenger = () => {
       },
       message
     );
-    setMessages([...messages, res.messages]);
+    setMessages(prevMessages => {
+      return [...prevMessages, res.messages];
+    });
     setNewMessage('');
   };
 
@@ -148,16 +173,15 @@ const Messenger = () => {
             {currentChat ? (
               <>
                 <div className="chatBoxTop">
-                  {messages &&
-                    messages.map(m => (
-                      <div key={uuidv4()} ref={scrollRef}>
-                        <Message
-                          message={m}
-                          own={authUser._id === m.sender._id}
-                          picture={m.sender}
-                        />
-                      </div>
-                    ))}
+                  {messages.map(m => (
+                    <div key={uuidv4()} ref={scrollRef}>
+                      <Message
+                        message={m}
+                        own={authUser._id === m.sender._id ? true : false}
+                        picture={m.sender}
+                      />
+                    </div>
+                  ))}
                 </div>
                 <div className="chatBoxBottom">
                   <input

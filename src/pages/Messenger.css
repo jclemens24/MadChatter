@@ -54,6 +54,11 @@
   cursor: pointer;
   background-color: transparent;
   color: #5f3dc4;
+  margin: 0 0.5rem;
+}
+
+.MuiSvgIcon-root {
+  display: inline;
 }
 
 .chatSubmitButton:hover {
