@@ -101,7 +101,7 @@ export const register = createAsyncThunk(
       );
       return data;
     } catch (err) {
-      thunkAPI.rejectWithValue(err.response.data.message);
+      return thunkAPI.rejectWithValue(err.response.data.message);
     }
   }
 );
@@ -112,7 +112,7 @@ export const addAFriend = createAsyncThunk(
     try {
       const res = await axios({
         method: 'PATCH',
-        url: `http://localhost:8000/api/users/${userId}/friends?unfollow=0`,
+        url: `http://localhost:8000/api/users/${userId}/friends?follow=1`,
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ export const addAFriend = createAsyncThunk(
       }
       return data;
     } catch (err) {
-      thunkAPI.rejectWithValue(err.response.data.message);
+      return thunkAPI.rejectWithValue(err.response.data.message);
     }
   }
 );
@@ -153,7 +153,7 @@ export const unfollowAFriend = createAsyncThunk(
       }
       return data;
     } catch (err) {
-      thunkAPI.rejectWithValue(err.response.data.message);
+      return thunkAPI.rejectWithValue(err.response.data.message);
     }
   }
 );

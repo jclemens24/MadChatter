@@ -1,17 +1,15 @@
 import Card from '../UI/Card';
 import './PhotoItem.css';
 import { useHttp } from '../hooks/useHttp';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { authAction } from '../slices/authSlice';
-import { userToken } from '../slices/authSlice';
+import { authAction, userToken, authorizedUser } from '../slices/authSlice';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
 
 export default function PhotoItem(props) {
   const token = useSelector(userToken);
-  const authUser = useSelector(state => state.auth.user);
+  const authUser = useSelector(authorizedUser);
   const dispatch = useDispatch();
   const { userId } = useParams();
   const { loading, error, sendRequest, clearError } = useHttp();

@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useHttp } from '../hooks/useHttp';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import PhotoItem from '../components/PhotoItem';
 import PhotoModal from '../UI/PhotoModal';
 import './Photos.css';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
-import { userToken } from '../slices/authSlice';
+import { userToken, authorizedUser } from '../slices/authSlice';
 
 export default function Photos() {
   const { userId } = useParams();
@@ -16,7 +15,7 @@ export default function Photos() {
   const [modalOpen, setModalOpen] = useState(true);
   const [photos, setPhotos] = useState([]);
   const token = useSelector(userToken);
-  const authUser = useSelector(state => state.auth.user);
+  const authUser = useSelector(authorizedUser);
   const { loading, error, sendRequest, clearError } = useHttp();
 
   useEffect(() => {

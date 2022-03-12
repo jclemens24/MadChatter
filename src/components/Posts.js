@@ -6,14 +6,16 @@ import { format } from 'timeago.js';
 import { useHttp } from '../hooks/useHttp';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
-import { userToken } from '../slices/authSlice';
+import { userToken, authorizedUser } from '../slices/authSlice';
+import { selectPostById } from '../slices/postSlice';
 import './Posts.css';
 
 export default function Post(props) {
   const [numOfLikes, setNumOfLikes] = useState(props.post?.likes.length);
   const [isLiked, setIsLiked] = useState();
   const token = useSelector(userToken);
-  const authUser = useSelector(state => state.auth.user);
+  const authUser = useSelector(authorizedUser);
+  const getPostById = useSelector(selectPostById);
   const { loading, error, sendRequest, clearError } = useHttp();
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export default function Post(props) {
         { Authorization: `Bearer ${token}` }
       );
       setIsLiked(false);
-      setNumOfLikes(res.post?.likes.length);
+      setNumOfLikes(res.post.likes.length ?? 0);
     } catch (err) {}
   };
 

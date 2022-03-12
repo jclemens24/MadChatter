@@ -3,9 +3,10 @@ import Post from './Posts';
 import Share from './Share';
 import './UserFeed.css';
 import { useSelector } from 'react-redux';
+import { authorizedUser } from '../slices/authSlice';
 
 const UserFeed = props => {
-  const authUser = useSelector(state => state.auth.user);
+  const authUser = useSelector(authorizedUser);
   return (
     <div className="feed">
       <div className="feed__wrapper">

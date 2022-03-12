@@ -7,11 +7,9 @@ import {
   ChatOutlined,
   Logout,
 } from '@mui/icons-material';
-import { NavLink } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../slices/authActions';
-import { useNavigate } from 'react-router-dom';
 
 const TopBar = () => {
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn ?? null);

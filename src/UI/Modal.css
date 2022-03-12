@@ -29,7 +29,7 @@
 
 .photo_submit img {
   height: 400px;
-  width: 400px;
+  width: auto;
 }
 
 .modal__footer {

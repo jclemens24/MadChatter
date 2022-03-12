@@ -6,6 +6,7 @@ import { register } from '../slices/authThunks';
 import * as Yup from 'yup';
 import './Auth.css';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { authorizedUser } from '../slices/authSlice';
 import ErrorModal from '../UI/ErrorModal';
 import LoadingSpinner from '../UI/LoadingSpinner';
 
@@ -13,7 +14,7 @@ const Register = props => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
-  const authUser = useSelector(state => state.auth.user);
+  const authUser = useSelector(authorizedUser);
   const { isLoggedIn } = useSelector(state => state.auth);
   const { status } = useSelector(state => state.auth);
   const { errorMessage } = useSelector(state => state.auth);

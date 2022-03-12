@@ -3,11 +3,10 @@ import './Auth.css';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import TextInput from '../UI/TextInput';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { Outlet } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, Outlet } from 'react-router-dom';
 import { login } from '../slices/authThunks';
-import { useSelector } from 'react-redux';
+import { authorizedUser } from '../slices/authSlice';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
 
@@ -15,7 +14,7 @@ const Login = props => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
-  const authUser = useSelector(state => state.auth.user);
+  const authUser = useSelector(authorizedUser);
   const status = useSelector(state => state.auth.status);
   const errorMessage = useSelector(state => state.auth.errorMessage);
   const [error, setError] = useState(null);

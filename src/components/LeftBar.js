@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './LeftBar.css';
 import { Link } from 'react-router-dom';
-import { RssFeedOutlined } from '@mui/icons-material';
-import { ChatBubbleOutlineOutlined } from '@mui/icons-material';
-import { PlayCircleOutlineOutlined } from '@mui/icons-material';
 import {
+  RssFeedOutlined,
   Group,
   Bookmarks,
   Help,
@@ -12,34 +10,42 @@ import {
   School,
   Settings,
   PhotoCameraOutlined,
+  PlayCircleOutlineOutlined,
+  ChatBubbleOutlineOutlined,
 } from '@mui/icons-material';
 import { useHttp } from '../hooks/useHttp';
 import { useSelector } from 'react-redux';
 import UsersNearby from './UsersNearby';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
-import { userToken } from '../slices/authSlice';
+import { userToken, authorizedUser } from '../slices/authSlice';
 
 const LeftBar = props => {
   const token = useSelector(userToken);
-  const authUser = useSelector(state => state.auth.user);
+  const authUser = useSelector(authorizedUser);
+  const [authUserFriends] = useSelector(state => state.auth.user?.following);
+  const { _id } = authUser ?? null;
+  const [lng, lat] = authUser?.location.coordinates;
   const [nearbyFriends, setNearbyFriends] = useState([]);
   const { loading, error, sendRequest, clearError } = useHttp();
+
   useEffect(() => {
     const getNearbyFriends = async () => {
-      try {
-        const res = await sendRequest(
-          `http://localhost:8000/api/users/${authUser.location.coordinates[0]},${authUser.location.coordinates[1]}`,
-          'GET',
-          { Authorization: `Bearer ${token}` }
-        );
+      const res = await sendRequest(
+        `http://localhost:8000/api/users/${lng},${lat}`,
+        'GET',
+        { Authorization: `Bearer ${token}` }
+      );
 
-        setNearbyFriends(res.users.filter(user => user._id !== props.user._id));
-      } catch (err) {}
+      setNearbyFriends(
+        res.users
+          .filter(user => user._id !== _id)
+          .filter(u => u._id !== authUserFriends._id)
+      );
     };
     getNearbyFriends();
     return () => {};
-  }, [sendRequest, authUser.location.coordinates, token, props.user._id]);
+  }, [sendRequest, lng, lat, token, _id, authUserFriends]);
 
   if (error) {
     return <ErrorModal error={error} onClear={clearError} />;

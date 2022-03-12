@@ -4,22 +4,23 @@ import { Remove, Add } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import './RightBar.css';
 import Online from './Online';
-import { addAFriend } from '../slices/authThunks';
-import { unfollowAFriend } from '../slices/authThunks';
-import { userToken } from '../slices/authSlice';
+import { addAFriend, unfollowAFriend } from '../slices/authThunks';
+import { userToken, authorizedUser } from '../slices/authSlice';
 
 const RightBar = props => {
-  const user = useSelector(state => state.auth.user);
+  const authUser = useSelector(authorizedUser);
   const token = useSelector(userToken);
 
   const dispatch = useDispatch();
 
   const handleFollowClick = id => {
-    const alreadyFriended = user.following.find(friend => friend._id === id);
+    const alreadyFriended = authUser.following.find(
+      friend => friend._id === id
+    );
     if (alreadyFriended) {
-      dispatch(unfollowAFriend({ id, userId: user._id, token }));
+      dispatch(unfollowAFriend({ id, userId: authUser._id, token }));
     } else {
-      dispatch(addAFriend({ id, userId: user._id, token }));
+      dispatch(addAFriend({ id, userId: authUser._id, token }));
     }
   };
 
@@ -50,7 +51,7 @@ const RightBar = props => {
           </div>
         </div>
         <h4 className="rightbar__title">
-          {props.user._id === user._id
+          {props.user._id === authUser._id
             ? 'Your Friends'
             : `${props.user.firstName}'s friends`}
         </h4>
@@ -78,10 +79,14 @@ const RightBar = props => {
                     className="btn btn__follow"
                     onClick={handleFollowClick.bind(null, friend._id)}
                   >
-                    {user.following.some(p => p._id === friend._id)
+                    {authUser.following.some(
+                      person => person._id === friend._id
+                    )
                       ? 'Unfollow'
                       : 'Follow'}
-                    {user.following.some(p => p._id === friend._id) ? (
+                    {authUser.following.some(
+                      person => person._id === friend._id
+                    ) ? (
                       <Remove />
                     ) : (
                       <Add />

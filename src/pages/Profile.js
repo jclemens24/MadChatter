@@ -4,20 +4,24 @@ import LeftBar from '../components/LeftBar';
 import RightBar from '../components/RightBar';
 import UserFeed from '../components/UserFeed';
 import './Profile.css';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { PhotoCamera } from '@mui/icons-material';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import Modal from '../UI/Modal';
 import { useHttp } from '../hooks/useHttp';
 import ErrorModal from '../UI/ErrorModal';
-import { authAction } from '../slices/authSlice';
-import { userToken } from '../slices/authSlice';
+import {
+  authAction,
+  userToken,
+  authorizedUser,
+  authError,
+} from '../slices/authSlice';
 
-const Profile = props => {
+const Profile = () => {
   const dispatch = useDispatch();
-  const authUser = useSelector(state => state.auth.user);
+  const authUser = useSelector(authorizedUser);
   const token = useSelector(userToken);
+  const appError = useSelector(authError);
   const posts = useSelector(state => state.post.posts);
   const { loading, error, sendRequest, clearError } = useHttp();
   const { status } = useSelector(state => state.auth);
@@ -31,7 +35,10 @@ const Profile = props => {
     const chosenFile = event.target.files[0];
     setPreviewUrl(window.URL.createObjectURL(chosenFile));
     setFile(event.target.files[0]);
-    console.log(event.target.files[0]);
+  };
+
+  const handleComponentError = () => {
+    dispatch(authAction.acknowledgeStatus());
   };
 
   const submitPhotoHandler = async event => {
@@ -49,12 +56,21 @@ const Profile = props => {
     dispatch(authAction.updatePhotos(res.photo));
   };
 
-  while (status === 'pending') {
+  const handlePhotoModal = () => {
+    setShowModal(false);
+    window.location.reload();
+  };
+
+  if (status === 'pending') {
     return <LoadingSpinner asOverlay />;
   }
 
   if (error) {
     return <ErrorModal error={error} onClear={clearError} />;
+  }
+
+  if (status === 'failed') {
+    return <ErrorModal error={appError} onClear={handleComponentError} />;
   }
 
   return (
@@ -101,7 +117,14 @@ const Profile = props => {
                       show={showModal}
                       header="Upload This Photo?"
                       onSubmit={submitPhotoHandler}
-                      footer={<button type="sumbit">Submit</button>}
+                      footer={
+                        <>
+                          <button type="sumbit">Submit</button>
+                          <button onClick={handlePhotoModal} type="button">
+                            Cancel
+                          </button>
+                        </>
+                      }
                       contentClass={'photo_submit'}
                     >
                       {loading && <LoadingSpinner />}

@@ -6,11 +6,11 @@ import { useSelector } from 'react-redux';
 import { useHttp } from '../hooks/useHttp';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
-import { userToken } from '../slices/authSlice';
+import { userToken, authorizedUser } from '../slices/authSlice';
 
-const TimelineFeed = props => {
+const TimelineFeed = () => {
   const token = useSelector(userToken);
-  const authUser = useSelector(state => state.auth.user);
+  const authUser = useSelector(authorizedUser);
   const [allPosts, setAllPosts] = useState([]);
   const { loading, error, sendRequest, clearError } = useHttp();
 

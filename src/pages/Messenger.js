@@ -6,7 +6,7 @@ import Message from '../components/Message';
 import Conversation from '../components/Conversation';
 import ChatOnline from '../components/ChatOnline';
 import { useHttp } from '../hooks/useHttp';
-import { userToken } from '../slices/authSlice';
+import { userToken, authorizedUser } from '../slices/authSlice';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
 import { io } from 'socket.io-client';
@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DoneAll } from '@mui/icons-material';
 
 const Messenger = () => {
-  const authUser = useSelector(state => state.auth.user);
+  const authUser = useSelector(authorizedUser);
   const token = useSelector(userToken);
   const [conversations, setConversations] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
@@ -26,6 +26,21 @@ const Messenger = () => {
   const socket = useRef();
   const scrollRef = useRef();
   const { _id, firstName } = authUser;
+
+  const handleCurrentChat = chat => {
+    setCurrentChat(chat);
+  };
+
+  useEffect(() => {
+    localStorage.setItem('currentChat', JSON.stringify(currentChat));
+  }, [currentChat]);
+
+  useEffect(() => {
+    const storedCurrentChat = JSON.parse(localStorage.getItem('currentChat'));
+    if (storedCurrentChat) {
+      handleCurrentChat(storedCurrentChat);
+    }
+  }, []);
 
   useEffect(() => {
     socket.current = io('http://localhost:8000', {
@@ -56,11 +71,17 @@ const Messenger = () => {
         reciever: data.to,
         createdAt: Date.now(),
       });
+      setMessages(prevMessages => {
+        return [
+          ...prevMessages,
+          { sender: data.from, text: data.content, createdAt: Date.now() },
+        ];
+      });
     });
     return () => {
       socket.current.close();
     };
-  }, [token, messages, _id, firstName, authUser]);
+  }, [token, messages, _id, firstName, authUser, arrivalMessage]);
 
   useEffect(() => {
     const sessionId = localStorage.getItem('sessionId');
@@ -71,11 +92,11 @@ const Messenger = () => {
     }
   }, []);
 
-  useEffect(() => {
-    setMessages(prevMessages => {
-      return [...prevMessages, arrivalMessage];
-    });
-  }, [arrivalMessage]);
+  // useEffect(() => {
+  //   setMessages(prevMessages => {
+  //     return [...prevMessages, arrivalMessage];
+  //   });
+  // }, [arrivalMessage]);
 
   useEffect(() => {
     const getConversations = async () => {
@@ -182,6 +203,9 @@ const Messenger = () => {
                       />
                     </div>
                   ))}
+                  {messages.every(message => message.read === true) && (
+                    <DoneAll fontSize="small" />
+                  )}
                 </div>
                 <div className="chatBoxBottom">
                   <input

@@ -6,10 +6,9 @@ import {
   EmojiEmotions,
   Cancel,
 } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import './Share.css';
 import { makeAPost } from '../slices/postThunks';
-import { useDispatch } from 'react-redux';
 import { userToken } from '../slices/authSlice';
 
 const Share = props => {

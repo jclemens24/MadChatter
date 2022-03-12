@@ -47,6 +47,9 @@ const authSlice = createSlice({
         pic => pic !== action.payload
       );
     },
+    acknowledgeStatus(state) {
+      state.status = 'idle';
+    },
     logout() {
       return initialAuthState;
     },
@@ -127,7 +130,17 @@ const authSlice = createSlice({
 
 export const userToken = state => state.auth.token;
 
+export const authorizedUser = state => state.auth.user;
+
 export const selectAllFriends = state => state.auth.user.following;
+
+export const selectFriendById = createSelector(
+  [selectAllFriends, (state, userId) => userId],
+  (friends, userId) => friends.find(friend => friend._id === userId)
+);
+
+export const authStatus = state => state.auth.status;
+export const authError = state => state.auth.errorMessage;
 
 export const authAction = authSlice.actions;
 
