@@ -22,7 +22,7 @@ exports.createAMessage = catchAsync(async (req, res, next) => {
 
   if (conversationExists) {
     const addMessages = await Message.create({
-      sender: req.body.senderId,
+      sender: req.body.sender,
       text: req.body.text,
       conversationId: req.body.conversationId
     });

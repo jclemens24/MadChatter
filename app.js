@@ -13,7 +13,9 @@ const conversationRouter = require('./routes/conversationRoute');
 const messageRouter = require('./routes/messageRoute');
 const errorController = require('./controller/errorController');
 const AppError = require('./utils/appError');
+const { InMemorySessionStore } = require('./store/sessionStore');
 
+const sessionStore = new InMemorySessionStore();
 dotenv.config({ path: './config.env' });
 
 // Database Connection
@@ -66,37 +68,80 @@ app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-const users = [];
-console.log(users);
+io.use((socket, next) => {
+  const sessionId = socket.handshake.auth._id;
+  if (sessionId) {
+    const session = sessionStore.findSession(sessionId);
+    if (session) {
+      socket.sessionId = sessionId;
+      socket.userId = session.userId;
+      socket._id = session.userId;
+      socket.username = session.username;
+      return next();
+    }
+  }
+  socket.sessionId = socket.handshake.auth._id;
+  socket.userId = socket.handshake.auth.userId;
+  socket.username = socket.handshake.auth.username;
+  if (!sessionId)
+    return next(new AppError('Trouble connecting. Please reload.', 400));
+  next();
+});
 
-const addUser = (userId, socketId) => {
-  const exists = users.some(user => user.userId === userId);
-  if (exists) return;
-  users.push({ userId, socketId });
-};
-
-// const removeUser = socketId => {
-//   users.filter(user => user.socketId !== socketId);
-// };
-
-const getUser = userId => {
-  return users.find(user => user.userId === userId);
-};
-
-io.on('connection', socket => {
+io.on('connection', async socket => {
   console.log('a user is connected');
-  socket.on('addUser', user => {
-    console.log(user);
-    addUser(user._id, socket.id);
-    console.log(users);
+  console.log(socket);
+  sessionStore.saveSession(socket.sessionId, {
+    userId: socket.userId,
+    username: socket.username,
+    connected: true
   });
 
-  socket.on('sendMessage', ({ sender, reciever, text }) => {
-    const user = getUser(reciever._id);
-    socket.to(user.socketId).emit('postMessage', {
-      sender,
-      text
+  socket.emit('session', {
+    sessionId: socket.sessionId,
+    userId: socket.userId
+  });
+
+  socket.join(socket.userId);
+
+  const users = [];
+
+  sessionStore.findAllSessions().forEach(session => {
+    users.push({
+      userId: session.userId,
+      username: session.username,
+      connected: session.connected
     });
+  });
+
+  socket.emit('users', users);
+
+  socket.broadcast.emit('user connected', {
+    userId: socket.userId,
+    connected: true
+  });
+
+  socket.on('private message', ({ content, to, from }) => {
+    console.log({ to, content });
+    socket.to(to._id).to(socket.userId).emit('private message', {
+      content,
+      to,
+      from
+    });
+  });
+
+  socket.on('disconnect', async () => {
+    const matchingSockets = await io.in(socket.userId).allSockets();
+    const isDisconnected = matchingSockets.size === 0;
+    if (isDisconnected) {
+      socket.broadcast.emit('user disconnected', socket.userId);
+
+      sessionStore.saveSession(socket.sessionId, {
+        userId: socket.userId,
+        username: socket.username,
+        connected: false
+      });
+    }
   });
 });
 

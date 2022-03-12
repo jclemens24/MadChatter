@@ -17,7 +17,7 @@
     "prefer-destructuring": ["warn", { "object": true, "array": false }],
     "no-unused-vars": [
       "error",
-      { "argsIgnorePattern": "req|res|next|val|err|message|userId" }
+      { "argsIgnorePattern": "req|res|next|val|err|message|id|session" }
     ],
     "no-plusplus": "off",
     "max-classes-per-file": "off"
