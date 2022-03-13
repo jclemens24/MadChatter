@@ -16,13 +16,14 @@ import {
   authorizedUser,
   authError,
 } from '../slices/authSlice';
+import { selectAllPosts } from '../slices/postSlice';
 
 const Profile = () => {
   const dispatch = useDispatch();
   const authUser = useSelector(authorizedUser);
   const token = useSelector(userToken);
   const appError = useSelector(authError);
-  const posts = useSelector(state => state.post.posts);
+  const posts = useSelector(selectAllPosts);
   const { loading, error, sendRequest, clearError } = useHttp();
   const { status } = useSelector(state => state.auth);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -38,7 +39,7 @@ const Profile = () => {
   };
 
   const handleComponentError = () => {
-    dispatch(authAction.acknowledgeStatus());
+    dispatch(authAction.acknowledgeError());
   };
 
   const submitPhotoHandler = async event => {
@@ -136,7 +137,9 @@ const Profile = () => {
             </div>
             <div className="profile__info">
               <h4 className="profile__info--name">{`${authUser.firstName} ${authUser.lastName}`}</h4>
-              <span className="profile__info--desc">My catch phrase</span>
+              <span className="profile__info--desc">
+                {authUser.catchPhrase}
+              </span>
             </div>
           </div>
           <div className="profile__right--bottom">

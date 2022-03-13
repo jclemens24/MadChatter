@@ -63,12 +63,13 @@
 }
 
 .profile__info--name {
-  font-size: 24px;
+  font-size: 28px;
 }
 
 .profile__info--desc {
-  font-weight: 300;
-  margin-bottom: 1em;
+  font-weight: bold;
+  margin-bottom: 1.5em;
+  font-style: italic;
 }
 
 .profile__right--bottom {

@@ -1,57 +1,85 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { MoreVert, ThumbUp, ThumbDown } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { format } from 'timeago.js';
-import { useHttp } from '../hooks/useHttp';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
 import { userToken, authorizedUser } from '../slices/authSlice';
-import { selectPostById } from '../slices/postSlice';
+import {
+  selectPostById,
+  postActions,
+  deleteAPost,
+  postError,
+  postErrorMessage,
+  postStatus,
+} from '../slices/postSlice';
+import { likeAPost, dislikeAPost } from '../slices/postThunks';
 import './Posts.css';
 
 export default function Post(props) {
   const [numOfLikes, setNumOfLikes] = useState(props.post?.likes.length);
   const [isLiked, setIsLiked] = useState();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showCommentDropdown, setShowCommentDropdown] = useState(false);
   const token = useSelector(userToken);
   const authUser = useSelector(authorizedUser);
-  const getPostById = useSelector(selectPostById);
-  const { loading, error, sendRequest, clearError } = useHttp();
+  const PostById = useSelector(state => selectPostById(state, props.post._id));
+  const error = useSelector(postError);
+  const errorMessage = useSelector(postErrorMessage);
+  const status = useSelector(postStatus);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (props.post.likes.some(p => p._id === authUser._id)) setIsLiked(true);
   }, [authUser._id, props.post.likes]);
 
+  const clearError = () => {
+    dispatch(postActions.acknowledgeError());
+  };
+
   const likeHandler = async () => {
-    try {
-      const res = await sendRequest(
-        `http://localhost:8000/api/posts/${props.post._id}/like`,
-        'PUT',
-        { Authorization: `Bearer ${token}` }
-      );
-      setIsLiked(true);
-      setNumOfLikes(res.post.likes.length);
-    } catch (err) {}
+    await dispatch(likeAPost({ token, postId: PostById._id }))
+      .unwrap()
+      .then(data => {
+        console.log(data);
+        setIsLiked(true);
+        setNumOfLikes(data.post.likes.length);
+      });
   };
 
   const dislikeHandler = async () => {
-    try {
-      const res = await sendRequest(
-        `http://localhost:8000/api/posts/${props.post._id}/dislike`,
-        'PUT',
-        { Authorization: `Bearer ${token}` }
-      );
-      setIsLiked(false);
-      setNumOfLikes(res.post.likes.length ?? 0);
-    } catch (err) {}
+    await dispatch(dislikeAPost({ token, postId: PostById._id }))
+      .unwrap()
+      .then(data => {
+        console.log(data);
+        setIsLiked(false);
+        setNumOfLikes(data.post.likes.length);
+      });
   };
 
-  if (loading) {
+  const handleVertOptions = () => {
+    setShowDropdown(prevState => {
+      return !prevState;
+    });
+  };
+
+  const handleCommentClick = () => {
+    setShowCommentDropdown(prevState => {
+      return !prevState;
+    });
+  };
+
+  const handleDeletePost = async () => {
+    dispatch(deleteAPost(PostById._id));
+  };
+
+  if (status === 'pending') {
     return <LoadingSpinner asOverlay />;
   }
 
   if (error) {
-    return <ErrorModal error={error} onClear={clearError} />;
+    return <ErrorModal error={errorMessage} onClear={clearError} />;
   }
 
   return (
@@ -75,8 +103,19 @@ export default function Post(props) {
             <span className="postUsername">{`${props.user.firstName} ${props.user.lastName}`}</span>
             <span className="postDate">{format(props.post.createdAt)}</span>
           </div>
-          <div className="postTopRight">
-            <MoreVert />
+          <div className="postTopRight dropdown">
+            <MoreVert
+              onClick={handleVertOptions}
+              style={{ cursor: 'pointer' }}
+              focusable="true"
+            />
+            {showDropdown && (
+              <div style={{ display: 'block' }} className="dropdown-content">
+                <span onClick={handleDeletePost} className="dropdown-option">
+                  Delete
+                </span>
+              </div>
+            )}
           </div>
         </div>
         <div className="postCenter">
@@ -100,12 +139,20 @@ export default function Post(props) {
             <span className="postLikeCounter">{numOfLikes} people like it</span>
           </div>
           <div className="postBottomRight">
-            <span className="postCommentText">
+            <span onClick={handleCommentClick} className="postCommentText">
               {props.post.comment} comments
             </span>
           </div>
         </div>
       </div>
+      {showCommentDropdown && (
+        <div
+          style={{ display: 'flex', justifyContent: 'center' }}
+          className="dropdown-comment"
+        >
+          <span>Comments go here</span>
+        </div>
+      )}
     </div>
   );
 }

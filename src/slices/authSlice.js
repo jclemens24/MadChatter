@@ -47,7 +47,7 @@ const authSlice = createSlice({
         pic => pic !== action.payload
       );
     },
-    acknowledgeStatus(state) {
+    acknowledgeError(state) {
       state.status = 'idle';
     },
     logout() {

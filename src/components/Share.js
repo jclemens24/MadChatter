@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import './Share.css';
 import { makeAPost } from '../slices/postThunks';
 import { userToken } from '../slices/authSlice';
+import InputEmojiWithRef from 'react-input-emoji';
 
 const Share = props => {
   const token = useSelector(userToken);
@@ -18,14 +19,18 @@ const Share = props => {
   const dispatch = useDispatch();
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-
+  const [text, setText] = useState('');
   const submitHandler = async event => {
     event.preventDefault();
     const formData = new FormData();
-    formData.append('desc', desc.current.value);
+    formData.append('desc', text);
     formData.append('image', file);
     await dispatch(makeAPost({ token, formData })).unwrap();
     desc.current.value = '';
+  };
+
+  const handleOnEnter = text => {
+    setText(text);
   };
 
   const grabImageHandler = event => {
@@ -47,10 +52,14 @@ const Share = props => {
       <div className="shareWrapper">
         <div className="shareTop">
           <img className="shareProfileImg" src={picture} alt="" />
-          <input
+          <InputEmojiWithRef
             placeholder={"What's on your mind " + props.user.firstName + '?'}
             className="shareInput"
             ref={desc}
+            onEnter={handleOnEnter}
+            onChange={setText}
+            cleanOnEnter
+            value={text}
           />
         </div>
         <hr className="shareHr" />
@@ -68,7 +77,7 @@ const Share = props => {
           <div className="shareOptions">
             <label htmlFor="image" className="shareOption">
               <PermMedia
-                htmlColor="tomato"
+                htmlColor="#2f9e44"
                 className="shareIcon"
                 onClick={pickImageHandler}
               />
@@ -84,16 +93,12 @@ const Share = props => {
               />
             </label>
             <div className="shareOption">
-              <Label htmlColor="blue" className="shareIcon" />
+              <Label htmlColor="#c2255c" className="shareIcon" />
               <span className="shareOptionText">Tag</span>
             </div>
             <div className="shareOption">
-              <Room htmlColor="green" className="shareIcon" />
+              <Room htmlColor="#3b5bdb" className="shareIcon" />
               <span className="shareOptionText">Location</span>
-            </div>
-            <div className="shareOption">
-              <EmojiEmotions htmlColor="goldenrod" className="shareIcon" />
-              <span className="shareOptionText">Feelings</span>
             </div>
           </div>
           <button className="shareButton" type="submit">

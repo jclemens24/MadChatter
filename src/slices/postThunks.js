@@ -51,3 +51,30 @@ export const likeAPost = createAsyncThunk(
     }
   }
 );
+
+export const dislikeAPost = createAsyncThunk(
+  'post/dislikeAPost',
+  async ({ token, postId }, thunkAPI) => {
+    try {
+      const controller = new AbortController();
+      const res = await axios({
+        method: 'PUT',
+        url: `http://localhost:8000/api/posts/${postId}/dislike`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      thunkAPI.signal.addEventListener('abort', () => {
+        controller.abort();
+        return thunkAPI.rejectWithValue('Request Aborted!');
+      });
+      const data = await res.data;
+      if (res.data.status === 'error' || res.data.status === 'fail') {
+        throw new Error(res.data.message);
+      }
+      return data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  }
+);
