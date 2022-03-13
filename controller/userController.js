@@ -27,7 +27,7 @@ exports.unfollowAndFollowAFriend = catchAsync(async (req, res, next) => {
   if (!userId || !userFriend)
     return next(new AppError('Request could not be completed', 404));
 
-  if (req.query.unfollow === '1') {
+  if (req.query.unfollow) {
     const friend = await User.findById(userFriend);
     await User.findByIdAndUpdate(
       { _id: userId },
@@ -41,9 +41,20 @@ exports.unfollowAndFollowAFriend = catchAsync(async (req, res, next) => {
       status: 'success',
       user: friend
     });
-  } else if (req.query.unfollow === '0') {
+  }
+
+  if (req.query.follow) {
     const friend = await User.findById(userFriend);
     if (!friend) return next(new AppError('No results', 400));
+    const alreadyFriended = await User.findById(userId).where({
+      following: userFriend
+    });
+
+    if (alreadyFriended)
+      return next(
+        new AppError('You are already friends with this person.', 404)
+      );
+
     await User.findByIdAndUpdate(
       { _id: userId },
       {
@@ -93,7 +104,7 @@ exports.suggestFriends = catchAsync(async (req, res, next) => {
         },
         distanceField: 'distance',
         distanceMultiplier: multiplier,
-        maxDistance: 5000
+        maxDistance: 1000000
       }
     },
     {

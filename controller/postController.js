@@ -72,7 +72,8 @@ exports.likeAPost = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    post: post
+    post: post,
+    user: req.user._id
   });
 });
 
@@ -89,6 +90,19 @@ exports.dislikeAPost = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    post: post
+    post: post,
+    user: req.user._id
+  });
+});
+
+exports.deleteOnePost = catchAsync(async (req, res, next) => {
+  const { postId } = req.params;
+
+  const post = await Post.findByIdAndDelete(postId);
+
+  if (!post) return next(new AppError('There is no post by that ID', 404));
+
+  res.status(204).json({
+    status: 'success'
   });
 });

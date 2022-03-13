@@ -16,4 +16,6 @@ router
     postController.resizePostPhoto,
     postController.createANewPost
   );
+
+router.route('/:postId').delete(postController.deleteOnePost);
 module.exports = router;

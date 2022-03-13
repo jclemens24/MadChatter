@@ -83,14 +83,13 @@ io.use((socket, next) => {
   socket.sessionId = socket.handshake.auth._id;
   socket.userId = socket.handshake.auth.userId;
   socket.username = socket.handshake.auth.username;
+  socket._id = socket.handshake.auth._id;
   if (!sessionId)
     return next(new AppError('Trouble connecting. Please reload.', 400));
   next();
 });
 
 io.on('connection', async socket => {
-  console.log('a user is connected');
-  console.log(socket);
   sessionStore.saveSession(socket.sessionId, {
     userId: socket.userId,
     username: socket.username,
@@ -122,7 +121,6 @@ io.on('connection', async socket => {
   });
 
   socket.on('private message', ({ content, to, from }) => {
-    console.log({ to, content });
     socket.to(to._id).to(socket.userId).emit('private message', {
       content,
       to,

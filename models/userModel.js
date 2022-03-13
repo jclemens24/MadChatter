@@ -80,6 +80,13 @@ const userSchema = new mongoose.Schema(
     },
     birthYear: {
       type: Number
+    },
+    catchPhrase: {
+      type: String,
+      minlength: [1, 'A catch phrase must be at least 1 character'],
+      maxlength: [150, 'A catch phrase cannot be longer than 150 characters'],
+      trim: true,
+      default: 'Say Something Clever'
     }
   },
   {
