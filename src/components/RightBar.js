@@ -64,7 +64,10 @@ const RightBar = props => {
             props.user.following?.map(friend => (
               <div key={friend._id} className="rightbar__followings">
                 <div className="rightbar__following">
-                  <Link to={`/${friend._id}/profile/friend`}>
+                  <Link
+                    state={{ friendProfile: true }}
+                    to={`/${friend._id}/friend`}
+                  >
                     <img
                       src={
                         friend.profilePic.startsWith('https')

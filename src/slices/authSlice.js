@@ -12,6 +12,7 @@ const initialAuthState = {
   token: null,
   isLoggedIn: false,
   status: 'idle',
+  errorMessage: null,
 };
 
 const authSlice = createSlice({
@@ -47,6 +48,10 @@ const authSlice = createSlice({
         pic => pic !== action.payload
       );
     },
+    updateCoverPic(state, action) {
+      const { photo } = action.payload;
+      state.user.coverPic = photo;
+    },
     acknowledgeError(state) {
       state.status = 'idle';
     },
@@ -59,7 +64,6 @@ const authSlice = createSlice({
       state.status = 'success';
       state.token = action.payload.token;
       state.user = action.payload.user;
-      delete state.user.posts;
       state.isLoggedIn = !!state.token;
     },
     [login.pending]: state => {
@@ -68,6 +72,7 @@ const authSlice = createSlice({
     [login.rejected]: (state, action) => {
       state.status = 'failed';
       state.errorMessage = action.payload;
+      state.isLoggedIn = false;
     },
 
     [register.fulfilled]: (state, action) => {
@@ -75,7 +80,6 @@ const authSlice = createSlice({
       const { token, user } = action.payload;
       state.token = token;
       state.user = user;
-      delete state.user.posts;
       state.isLoggedIn = true;
     },
     [register.pending]: state => {
@@ -84,10 +88,10 @@ const authSlice = createSlice({
     [register.rejected]: (state, action) => {
       state.status = 'failed';
       state.errorMessage = action.payload;
+      state.isLoggedIn = false;
     },
     [initializeUser.fulfilled]: (state, action) => {
       state.user = action.payload.data.user;
-      delete state.user.posts;
       state.token = action.payload.token;
       state.isLoggedIn = true;
       state.status = 'success';

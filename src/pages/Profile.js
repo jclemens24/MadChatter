@@ -5,7 +5,7 @@ import RightBar from '../components/RightBar';
 import UserFeed from '../components/UserFeed';
 import './Profile.css';
 import { useSelector, useDispatch } from 'react-redux';
-import { PhotoCamera } from '@mui/icons-material';
+import { PhotoCamera, PhotoSizeSelectActual } from '@mui/icons-material';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import Modal from '../UI/Modal';
 import { useHttp } from '../hooks/useHttp';
@@ -28,6 +28,8 @@ const Profile = () => {
   const { status } = useSelector(state => state.auth);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [file, setFile] = useState(null);
+  const [coverPhotoFile, setCoverPhotoFile] = useState(null);
+  const [coverPreviewUrl, setCoverPreviewUrl] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   const grabImageHandler = event => {
@@ -36,6 +38,14 @@ const Profile = () => {
     const chosenFile = event.target.files[0];
     setPreviewUrl(window.URL.createObjectURL(chosenFile));
     setFile(event.target.files[0]);
+  };
+
+  const grabCoverImageHandler = event => {
+    setShowModal(true);
+    event.preventDefault();
+    const chosenFile = event.target.files[0];
+    setCoverPreviewUrl(window.URL.createObjectURL(chosenFile));
+    setCoverPhotoFile(event.target.files[0]);
   };
 
   const handleComponentError = () => {
@@ -55,6 +65,20 @@ const Profile = () => {
     );
     dispatch(authAction.setProfilePic({ photo: res.photo }));
     dispatch(authAction.updatePhotos(res.photo));
+  };
+
+  const submitCoverPhotoHandler = async event => {
+    setShowModal(false);
+    event.preventDefault();
+    const formData = new FormData();
+    formData.append('image', coverPhotoFile);
+    const res = await sendRequest(
+      `http://localhost:8000/api/users/${authUser._id}/photos`,
+      'PATCH',
+      { Authorization: `Bearer ${token}` },
+      formData
+    );
+    dispatch(authAction.updateCoverPic({ photo: res.photo }));
   };
 
   const handlePhotoModal = () => {
@@ -82,11 +106,55 @@ const Profile = () => {
           <div className="profile__top">
             <div className="profile__cover-pic">
               <form>
-                <img
-                  className="profile__cover-image"
-                  src={`${authUser.coverPic}`}
-                  alt={`${authUser.firstName} profile`}
-                />
+                {!coverPhotoFile && (
+                  <input
+                    className="visually-hidden"
+                    type="file"
+                    id="coverimage"
+                    name="coverimage"
+                    accept="image/*"
+                    onChange={grabCoverImageHandler}
+                  />
+                )}
+                <label
+                  className="visually-hidden__label-hidden-cover-image"
+                  htmlFor="coverimage"
+                >
+                  <PhotoSizeSelectActual />
+                </label>
+                {!coverPhotoFile && (
+                  <img
+                    className="profile__cover-image"
+                    src={`http://localhost:8000/${authUser.coverPic}`}
+                    alt={`${authUser.firstName} profile`}
+                  />
+                )}
+                {coverPreviewUrl && (
+                  <React.Fragment>
+                    <img
+                      className="profile__cover-image"
+                      src={coverPreviewUrl}
+                      alt="Upload new cover"
+                    />
+                    <Modal
+                      show={showModal}
+                      header="Upload This Photo?"
+                      onSubmit={submitCoverPhotoHandler}
+                      footer={
+                        <div className="photo__modal--actions">
+                          <button type="sumbit">Submit</button>
+                          <button onClick={handlePhotoModal} type="button">
+                            Cancel
+                          </button>
+                        </div>
+                      }
+                      contentClass={'photo_submit'}
+                    >
+                      {loading && <LoadingSpinner />}
+                      {<img src={coverPreviewUrl} alt="" />}
+                    </Modal>
+                  </React.Fragment>
+                )}
                 {!file && (
                   <input
                     className="visually-hidden"
@@ -119,12 +187,12 @@ const Profile = () => {
                       header="Upload This Photo?"
                       onSubmit={submitPhotoHandler}
                       footer={
-                        <>
+                        <div className="photo__modal--actions">
                           <button type="sumbit">Submit</button>
                           <button onClick={handlePhotoModal} type="button">
                             Cancel
                           </button>
-                        </>
+                        </div>
                       }
                       contentClass={'photo_submit'}
                     >

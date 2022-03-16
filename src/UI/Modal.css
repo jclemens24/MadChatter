@@ -27,6 +27,11 @@
   font-size: 1.6rem;
 }
 
+.photo_submit {
+  display: flex;
+  justify-content: center;
+}
+
 .photo_submit img {
   height: 400px;
   width: auto;
@@ -34,6 +39,11 @@
 
 .modal__footer {
   padding: 1rem 0.5rem;
+}
+
+.photo__modal--actions {
+  display: flex;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {

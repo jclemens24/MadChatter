@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import './LeftBar.css';
 import { Link } from 'react-router-dom';
 import {
@@ -20,32 +20,25 @@ import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
 import { userToken, authorizedUser } from '../slices/authSlice';
 
-const LeftBar = props => {
+const LeftBar = ({ user }) => {
   const token = useSelector(userToken);
   const authUser = useSelector(authorizedUser);
-  const [authUserFriends] = useSelector(state => state.auth.user?.following);
-  const { _id } = authUser ?? null;
-  const [lng, lat] = authUser?.location.coordinates;
   const [nearbyFriends, setNearbyFriends] = useState([]);
   const { loading, error, sendRequest, clearError } = useHttp();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const getNearbyFriends = async () => {
       const res = await sendRequest(
-        `http://localhost:8000/api/users/${lng},${lat}`,
+        `http://localhost:8000/api/users/${user.location.coordinates[0]},${user.location.coordinates[1]}`,
         'GET',
         { Authorization: `Bearer ${token}` }
       );
 
-      setNearbyFriends(
-        res.users
-          .filter(user => user._id !== _id)
-          .filter(u => u._id !== authUserFriends._id)
-      );
+      setNearbyFriends(res.users.filter(user => user._id !== authUser._id));
     };
     getNearbyFriends();
     return () => {};
-  }, [sendRequest, lng, lat, token, _id, authUserFriends]);
+  }, [user, sendRequest]);
 
   if (error) {
     return <ErrorModal error={error} onClear={clearError} />;

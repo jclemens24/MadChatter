@@ -16,7 +16,7 @@ export const initializeUser = createAsyncThunk(
         },
       });
       const data = await res.data;
-      thunkAPI.dispatch(postActions.setPosts({ posts: data.user.posts }));
+      thunkAPI.dispatch(postActions.setPosts({ posts: data.posts }));
       return { data, token };
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data.message);
@@ -55,10 +55,9 @@ export const login = createAsyncThunk(
           userId: data.user._id,
         })
       );
-      thunkAPI.dispatch(postActions.setPosts({ posts: data.user.posts }));
+      thunkAPI.dispatch(postActions.setPosts({ posts: data.posts }));
       return data;
     } catch (err) {
-      if (err === 'AbortError') thunkAPI.rejectWithValue('Request Aborted');
       return thunkAPI.rejectWithValue(err.response.data.message);
     }
   }
@@ -99,6 +98,7 @@ export const register = createAsyncThunk(
           userId: data.user._id,
         })
       );
+      thunkAPI.dispatch(postActions.setPosts({ posts: data.posts }));
       return data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data.message);

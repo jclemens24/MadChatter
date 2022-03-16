@@ -1,11 +1,17 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
-import { dislikeAPost, likeAPost, makeAPost } from './postThunks';
+import {
+  dislikeAPost,
+  likeAPost,
+  makeAPost,
+  commentOnAPost,
+  getTimelineFeedPosts,
+} from './postThunks';
 import axios from 'axios';
 
 const initialPostState = {
   posts: [],
   status: 'idle',
-  error: false,
+  error: null,
   errorMessage: null,
   timelineFeed: [],
 };
@@ -17,6 +23,7 @@ const postSlice = createSlice({
     setPosts(state, action) {
       state.posts.push(...action.payload.posts);
       state.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return state;
     },
     clearPosts() {
       return initialPostState;
@@ -77,6 +84,36 @@ const postSlice = createSlice({
       state.errorMessage = action.payload;
       state.error = !!state.errorMessage;
     },
+    [commentOnAPost.fulfilled]: (state, action) => {
+      state.status = 'success';
+      const { comment } = action.payload;
+      const postId = comment.post;
+      const foundPost = state.posts.find(post => post._id === postId);
+      foundPost.comments.push(comment);
+    },
+    [commentOnAPost.pending]: state => {
+      state.status = 'pending';
+    },
+    [commentOnAPost.rejected]: (state, action) => {
+      state.status = 'failed';
+      state.errorMessage = action.payload;
+      state.error = !!state.errorMessage;
+    },
+    [getTimelineFeedPosts.fulfilled]: (state, action) => {
+      state.status = 'success';
+      state.timelineFeed.push(...action.payload);
+      state.timelineFeed = state.timelineFeed.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+    },
+    [getTimelineFeedPosts.pending]: state => {
+      state.status = 'pending';
+    },
+    [getTimelineFeedPosts.rejected]: (state, action) => {
+      state.status = 'failed';
+      state.errorMessage = action.payload;
+      state.error = !!state.errorMessage;
+    },
   },
 });
 
@@ -87,10 +124,17 @@ export const selectAllPosts = state => state.post.posts;
 export const selectPostById = (state, postId) =>
   state.post.posts.find(post => post._id === postId);
 
-export const selectPostsByUser = createSelector(
-  [selectAllPosts, (state, userId) => userId],
-  (posts, userId) => posts.filter(post => post.userId === userId)
+export const selectPostId = (state, postId) => postId;
+
+export const selectPostComments = createSelector(
+  [selectAllPosts, selectPostId, (state, posts, postId) => postId],
+  (posts, postId) =>
+    posts.flatMap(post =>
+      post.comments.filter(comment => comment.post === postId)
+    )
 );
+
+export const selectAllTimelinePosts = state => state.post.timelineFeed;
 
 export const deleteAPost = postId => {
   return async (dispatch, getState) => {

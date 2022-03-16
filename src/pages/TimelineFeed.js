@@ -27,8 +27,8 @@ const TimelineFeed = () => {
   }, [sendRequest, token]);
 
   useEffect(() => {
-    const storage = localStorage.getItem('feed');
-    if (storage) setAllPosts(JSON.parse(storage));
+    const storage = JSON.parse(localStorage.getItem('feed'));
+    if (storage) setAllPosts(storage);
   }, []);
 
   if (loading) {

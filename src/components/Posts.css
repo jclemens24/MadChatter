@@ -100,7 +100,7 @@
 .dropdown-comment {
   display: none;
   position: relative;
-  background-color: #e9ecef;
+  background-color: #f1f3f5;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   padding: 12px 16px;
   z-index: 2;
@@ -115,4 +115,11 @@
 .dropdown-option:hover {
   cursor: pointer;
   background-color: #dee2e6;
+}
+
+.leaveAComment {
+  position: relative;
+  padding: 15px 0 0;
+  margin-top: 10px;
+  width: 100%;
 }

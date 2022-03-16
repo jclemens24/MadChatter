@@ -1,11 +1,5 @@
 import React, { useState, useRef } from 'react';
-import {
-  PermMedia,
-  Label,
-  Room,
-  EmojiEmotions,
-  Cancel,
-} from '@mui/icons-material';
+import { PermMedia, Label, Room, Cancel } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import './Share.css';
 import { makeAPost } from '../slices/postThunks';
@@ -60,6 +54,7 @@ const Share = props => {
             onChange={setText}
             cleanOnEnter
             value={text}
+            fontFamily={'Open Sans'}
           />
         </div>
         <hr className="shareHr" />

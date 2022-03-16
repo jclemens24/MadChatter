@@ -15,6 +15,7 @@
   width: 100%;
   height: 250px;
   object-fit: cover;
+  cursor: pointer;
 }
 
 .profile__user-image {
@@ -46,6 +47,16 @@
   z-index: 2;
   color: #fff;
   opacity: 0.8;
+  cursor: pointer;
+}
+
+.visually-hidden__label-hidden-cover-image {
+  position: absolute;
+  width: 100%;
+  min-height: 250px;
+  display: flex;
+  justify-content: center;
+  opacity: 0;
   cursor: pointer;
 }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import ReactDOM from 'react-dom';
 import Backdrop from './Backdrop';
 import { CSSTransition } from 'react-transition-group';
@@ -29,6 +29,7 @@ const ModalOverlay = props => {
 };
 
 export default function Modal(props) {
+  const wrapper = React.createRef();
   return (
     <React.Fragment>
       {props.show && <Backdrop onClick={props.onCancel} />}
@@ -38,6 +39,7 @@ export default function Modal(props) {
         unmountOnExit
         timeout={200}
         classNames="modal"
+        ref={wrapper}
       >
         <ModalOverlay {...props} />
       </CSSTransition>

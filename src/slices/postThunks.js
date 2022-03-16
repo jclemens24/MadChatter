@@ -78,3 +78,115 @@ export const dislikeAPost = createAsyncThunk(
     }
   }
 );
+
+export const commentOnAPost = createAsyncThunk(
+  'post/commentOnAPost',
+  async ({ token, postId, comment }, thunkAPI) => {
+    try {
+      const controller = new AbortController();
+      const res = await axios({
+        method: 'POST',
+        url: `http://localhost:8000/api/posts/${postId}/comments`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          comment,
+        },
+      });
+      thunkAPI.signal.addEventListener('abort', () => {
+        controller.abort();
+        return thunkAPI.rejectWithValue('Request Aborted!');
+      });
+      const data = await res.data;
+      if (res.data.status === 'error' || res.data.status === 'fail') {
+        throw new Error(res.data.message);
+      }
+      return data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  }
+);
+
+export const getPostComments = createAsyncThunk(
+  'post/getPostComments',
+  async ({ token, postId }, thunkAPI) => {
+    try {
+      const controller = new AbortController();
+      const res = await axios({
+        method: 'GET',
+        url: `http://localhost:8000/api/posts/${postId}/comments`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      thunkAPI.signal.addEventListener('abort', () => {
+        controller.abort();
+        return thunkAPI.rejectWithValue('Request Aborted!');
+      });
+      const data = await res.data;
+      if (res.data.status === 'error' || res.data.status === 'fail') {
+        throw new Error(res.data.message);
+      }
+      return data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  }
+);
+
+export const getFriendsProfileData = createAsyncThunk(
+  'post/getFriendsProfileData',
+  async (userId, thunkAPI) => {
+    try {
+      const controller = new AbortController();
+      const state = thunkAPI.getState();
+      const res = await axios({
+        method: 'GET',
+        url: `http://localhost:8000/api/users/${userId}/profile/friends`,
+        headers: {
+          Authorization: `Bearer ${state.auth.token}`,
+        },
+      });
+      thunkAPI.signal.addEventListener('abort', () => {
+        controller.abort();
+        return thunkAPI.rejectWithValue('Request Aborted!');
+      });
+      const data = await res.data;
+      if (res.data.status === 'error' || res.data.status === 'fail') {
+        throw new Error(res.data.message);
+      }
+      return data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  }
+);
+
+export const getTimelineFeedPosts = createAsyncThunk(
+  'post/getTimelineFeedPosts',
+  async ({ token }, thunkAPI) => {
+    try {
+      const controller = new AbortController();
+      const res = await axios({
+        method: 'GET',
+        url: `http://localhost:8000/api/posts`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      thunkAPI.signal.addEventListener('abort', () => {
+        controller.abort();
+        return thunkAPI.rejectWithValue('Request Aborted!');
+      });
+      const data = await res.data;
+      if (res.data.status === 'error' || res.data.status === 'fail') {
+        throw new Error(res.data.message);
+      }
+      return data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  }
+);

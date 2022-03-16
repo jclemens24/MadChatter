@@ -115,6 +115,7 @@
 .friendsContainer {
   display: flex;
   justify-content: space-evenly;
+  gap: 15px;
   flex-wrap: wrap;
   flex-direction: row;
 }
