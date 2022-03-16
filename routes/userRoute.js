@@ -1,15 +1,16 @@
 const express = require('express');
 const authController = require('../controller/authController');
 const userController = require('../controller/userController');
+const postController = require('../controller/postController');
 const upload = require('../middleware/fileUpload');
 
 const router = express.Router();
 
-router.post('/login', authController.login);
-router.post('/signup', authController.signup);
+router.post('/login', authController.login, postController.getPostByUser);
+router.post('/signup', authController.signup, postController.getPostByUser);
 
 router.use(authController.verifyAuth);
-router.get('/', userController.validateAUser);
+router.get('/', userController.validateAUser, postController.getPostByUser);
 router.get('/:lnglat', userController.suggestFriends);
 router
   .route('/:userId/photos')
@@ -19,13 +20,21 @@ router
     upload.single('image'),
     userController.resizeUserPhoto,
     userController.uploadUserPhoto
+  )
+  .patch(
+    upload.single('image'),
+    userController.resizeUserPhoto,
+    userController.uploadCoverPhoto
   );
 
 router.patch('/photos/:pid', userController.deleteUserPhoto);
 
-router
-  .route('/:userId/friends')
-  .patch(userController.unfollowAndFollowAFriend)
-  .get(userController.getAUserProfile);
+router.route('/:userId/friends').patch(userController.unfollowAndFollowAFriend);
+
+router.get(
+  '/:userId/profile/friends',
+  userController.getAUserProfile,
+  postController.getAFriendsPosts
+);
 
 module.exports = router;

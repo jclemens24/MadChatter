@@ -9,15 +9,12 @@ exports.validateAUser = catchAsync(async (req, res, next) => {
   const userId = req.user._id;
 
   const user = await User.findById(userId)
-    .populate('posts')
     .populate('followers')
     .populate('following');
   if (!user) return next(new AppError('User could not be found', 404));
 
-  res.status(200).json({
-    status: 'success',
-    user
-  });
+  req.user = user;
+  next();
 });
 
 exports.unfollowAndFollowAFriend = catchAsync(async (req, res, next) => {
@@ -45,7 +42,7 @@ exports.unfollowAndFollowAFriend = catchAsync(async (req, res, next) => {
 
   if (req.query.follow) {
     const friend = await User.findById(userFriend);
-    if (!friend) return next(new AppError('No results', 400));
+    if (!friend) return next(new AppError('This friend no longer exists', 400));
     const alreadyFriended = await User.findById(userId).where({
       following: userFriend
     });
@@ -77,18 +74,14 @@ exports.getAUserProfile = catchAsync(async (req, res, next) => {
     return next(new AppError('User could not be found', 400));
   }
 
-  const friend = await User.findById(userId)
-    .populate('followers following')
-    .populate('posts');
+  const friend = await User.findById(userId).populate('followers following');
 
   if (!friend) {
     return next(new AppError('Could not find this profile', 400));
   }
 
-  res.status(200).json({
-    status: 'success',
-    user: friend
-  });
+  req.friend = friend;
+  next();
 });
 
 exports.suggestFriends = catchAsync(async (req, res, next) => {
@@ -184,6 +177,23 @@ exports.uploadUserPhoto = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     photo: user.profilePic
+  });
+});
+
+exports.uploadCoverPhoto = catchAsync(async (req, res, next) => {
+  const image = req.file.filename;
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      coverPic: image
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    photo: user.coverPic
   });
 });
 

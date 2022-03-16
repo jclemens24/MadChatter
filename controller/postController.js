@@ -6,11 +6,45 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
 exports.getAllPosts = catchAsync(async (req, res, next) => {
-  const posts = await Post.find({});
+  const posts = await Post.find({}).populate({ path: 'comments' });
 
   res.status(200).json({
     status: 'success',
     posts
+  });
+});
+
+exports.getPostByUser = catchAsync(async (req, res, next) => {
+  const posts = await Post.find({ userId: req.user._id }).populate({
+    path: 'comments'
+  });
+
+  if (!posts || !req.user)
+    return next(
+      new AppError(
+        'Could not find that post or you must login to access these posts',
+        401
+      )
+    );
+
+  res.status(200).json({
+    status: 'success',
+    token: req.token,
+    user: req.user,
+    posts
+  });
+});
+
+exports.getOnePost = catchAsync(async (req, res, next) => {
+  const post = await Post.findById(req.params.postId).populate({
+    path: 'comments'
+  });
+
+  if (!post) return next(new AppError('There is no post by that Id', 404));
+
+  res.status(200).json({
+    status: 'success',
+    post
   });
 });
 
@@ -97,12 +131,29 @@ exports.dislikeAPost = catchAsync(async (req, res, next) => {
 
 exports.deleteOnePost = catchAsync(async (req, res, next) => {
   const { postId } = req.params;
-
   const post = await Post.findByIdAndDelete(postId);
 
   if (!post) return next(new AppError('There is no post by that ID', 404));
 
-  res.status(204).json({
-    status: 'success'
+  next();
+});
+
+exports.getAFriendsPosts = catchAsync(async (req, res, next) => {
+  const friendPost = await Post.find({ userId: req.friend._id }).populate({
+    path: 'comments'
+  });
+
+  if (!friendPost)
+    return next(
+      new AppError(
+        'Could not find any posts by this user. Please try your request again',
+        404
+      )
+    );
+
+  res.status(200).json({
+    status: 'success',
+    user: req.friend,
+    posts: friendPost
   });
 });

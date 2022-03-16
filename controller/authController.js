@@ -12,18 +12,6 @@ const signToken = id => {
   });
 };
 
-const prepResponse = (user, statusCode, req, res) => {
-  const token = signToken(user._id);
-  user.password = undefined;
-  req.user = user;
-
-  res.status(statusCode).json({
-    status: 'success',
-    token,
-    user
-  });
-};
-
 exports.signup = catchAsync(async (req, res, next) => {
   const coordinates = await getCoordsForAddress(
     `${req.body.city} ${req.body.state}, ${req.body.zip}`
@@ -45,7 +33,11 @@ exports.signup = catchAsync(async (req, res, next) => {
     birthYear: req.body.birthYear
   });
 
-  prepResponse(newUser, 200, req, res);
+  const token = signToken(newUser._id);
+  newUser.password = undefined;
+  req.user = newUser;
+  req.token = token;
+  next();
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -60,8 +52,7 @@ exports.login = catchAsync(async (req, res, next) => {
     email
   })
     .select('+password')
-    .populate('following')
-    .populate('posts');
+    .populate('following');
 
   if (!user || !(await user.verifyPassword(password, user.password))) {
     return next(
@@ -72,7 +63,11 @@ exports.login = catchAsync(async (req, res, next) => {
     );
   }
 
-  prepResponse(user, 200, req, res);
+  const token = signToken(user._id);
+  user.password = undefined;
+  req.user = user;
+  req.token = token;
+  next();
 });
 
 exports.verifyAuth = catchAsync(async (req, res, next) => {

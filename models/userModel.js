@@ -105,6 +105,12 @@ userSchema.virtual('posts', {
   localField: '_id'
 });
 
+userSchema.virtual('comments', {
+  ref: 'Comment',
+  foreignField: 'user',
+  localField: '_id'
+});
+
 userSchema.index({ location: '2dsphere' });
 
 userSchema.pre('save', async function (next) {

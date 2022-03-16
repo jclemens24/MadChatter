@@ -11,6 +11,7 @@ const userRouter = require('./routes/userRoute');
 const postRouter = require('./routes/postRoute');
 const conversationRouter = require('./routes/conversationRoute');
 const messageRouter = require('./routes/messageRoute');
+const commentRouter = require('./routes/commentRoute');
 const errorController = require('./controller/errorController');
 const AppError = require('./utils/appError');
 const { InMemorySessionStore } = require('./store/sessionStore');
@@ -60,6 +61,7 @@ if (process.env.NODE_ENV === 'development') {
 // Routes
 app.use('/api/users', userRouter);
 app.use('/api/posts', postRouter);
+app.use('/api/comments', commentRouter);
 app.use('/api/conversations', conversationRouter);
 app.use('/api/messages', messageRouter);
 // Error Middleware
