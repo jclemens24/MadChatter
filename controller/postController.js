@@ -1,7 +1,6 @@
 const sharp = require('sharp');
 const uuid = require('uuid').v4;
 const Post = require('../models/postModel');
-const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
@@ -15,11 +14,11 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
 });
 
 exports.getPostByUser = catchAsync(async (req, res, next) => {
-  const posts = await Post.find({ userId: req.user._id }).populate({
+  const posts = await Post.find({ userId: req.params.userId }).populate({
     path: 'comments'
   });
 
-  if (!posts || !req.user)
+  if (!posts)
     return next(
       new AppError(
         'Could not find that post or you must login to access these posts',
@@ -29,8 +28,6 @@ exports.getPostByUser = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    token: req.token,
-    user: req.user,
     posts
   });
 });
@@ -64,7 +61,6 @@ exports.resizePostPhoto = catchAsync(async (req, res, next) => {
 });
 
 exports.createANewPost = catchAsync(async (req, res, next) => {
-  const { desc } = req.body;
   let image;
   if (req.file) {
     image = req.file.filename;
@@ -72,10 +68,9 @@ exports.createANewPost = catchAsync(async (req, res, next) => {
     image = null;
   }
 
-  const user = await User.findById(req.user._id);
   const newPost = await Post.create({
-    userId: user._id,
-    desc: desc,
+    userId: req.body.to,
+    desc: req.body.desc,
     image: image
   });
 

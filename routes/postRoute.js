@@ -25,4 +25,6 @@ router
   .route('/:postId')
   .delete(postController.deleteOnePost, commentController.deleteComments)
   .get(postController.getOnePost);
+
+router.get('/friends/:userId', postController.getPostByUser);
 module.exports = router;

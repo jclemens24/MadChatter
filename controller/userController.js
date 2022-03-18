@@ -2,19 +2,31 @@ const sharp = require('sharp');
 const uuid = require('uuid').v4;
 const fs = require('fs');
 const User = require('../models/userModel');
+const Post = require('../models/postModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
 exports.validateAUser = catchAsync(async (req, res, next) => {
   const userId = req.user._id;
 
-  const user = await User.findById(userId)
-    .populate('followers')
-    .populate('following');
+  const user = await User.findById(userId).populate('followers').populate({
+    path: 'following',
+    select:
+      '-__v -birthYear -catchPhrase -email -following -followers -coverPic -location -photos'
+  });
   if (!user) return next(new AppError('User could not be found', 404));
 
+  const posts = await Post.find({ userId: userId }).populate({
+    path: 'comments'
+  });
+
   req.user = user;
-  next();
+
+  res.status(200).json({
+    status: 'success',
+    user,
+    posts
+  });
 });
 
 exports.unfollowAndFollowAFriend = catchAsync(async (req, res, next) => {

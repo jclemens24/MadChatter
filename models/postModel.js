@@ -37,9 +37,8 @@ const postSchema = new mongoose.Schema(
 postSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'userId',
-    select: '-__v -passwordConfirm'
-  }).populate({
-    path: 'likes'
+    select:
+      '-__v -passwordConfirm -email -coverPic -followers -following -birthYear -photos -catchPhrase'
   });
   next();
 });
@@ -48,6 +47,27 @@ postSchema.virtual('comments', {
   ref: 'Comment',
   foreignField: 'post',
   localField: '_id'
+});
+
+postSchema.post('save', (doc, next) => {
+  doc
+    .populate({
+      path: 'userId',
+      select:
+        '-__v -passwordConfirm -email -coverPic -followers -following -birthYear -photos -catchPhrase'
+    })
+    .then(() => {
+      next();
+    });
+});
+
+postSchema.post(/^create/, function (next) {
+  this.populate({
+    path: 'comments',
+    options: {
+      _recursed: true
+    }
+  });
 });
 
 const Post = mongoose.model('Post', postSchema);

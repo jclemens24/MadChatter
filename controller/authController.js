@@ -1,6 +1,7 @@
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+const Post = require('../models/postModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const getCoordsForAddress = require('../utils/location');
@@ -52,7 +53,11 @@ exports.login = catchAsync(async (req, res, next) => {
     email
   })
     .select('+password')
-    .populate('following');
+    .populate({
+      path: 'following',
+      select:
+        '-__v -birthYear -catchPhrase -email -following -followers -coverPic -location -photos'
+    });
 
   if (!user || !(await user.verifyPassword(password, user.password))) {
     return next(
@@ -62,12 +67,19 @@ exports.login = catchAsync(async (req, res, next) => {
       )
     );
   }
+  const posts = await Post.find({ userId: user._id }).populate({
+    path: 'comments'
+  });
 
   const token = signToken(user._id);
   user.password = undefined;
-  req.user = user;
-  req.token = token;
-  next();
+
+  res.status(200).json({
+    status: 'success',
+    user,
+    token,
+    posts
+  });
 });
 
 exports.verifyAuth = catchAsync(async (req, res, next) => {

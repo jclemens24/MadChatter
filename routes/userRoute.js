@@ -6,11 +6,11 @@ const upload = require('../middleware/fileUpload');
 
 const router = express.Router();
 
-router.post('/login', authController.login, postController.getPostByUser);
-router.post('/signup', authController.signup, postController.getPostByUser);
+router.post('/login', authController.login);
+router.post('/signup', authController.signup);
 
 router.use(authController.verifyAuth);
-router.get('/', userController.validateAUser, postController.getPostByUser);
+router.get('/', userController.validateAUser);
 router.get('/:lnglat', userController.suggestFriends);
 router
   .route('/:userId/photos')
