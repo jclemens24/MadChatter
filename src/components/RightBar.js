@@ -10,7 +10,6 @@ import { userToken, authorizedUser } from '../slices/authSlice';
 const RightBar = props => {
   const authUser = useSelector(authorizedUser);
   const token = useSelector(userToken);
-
   const dispatch = useDispatch();
 
   const handleFollowClick = id => {
@@ -64,10 +63,7 @@ const RightBar = props => {
             props.user.following?.map(friend => (
               <div key={friend._id} className="rightbar__followings">
                 <div className="rightbar__following">
-                  <Link
-                    state={{ friendProfile: true }}
-                    to={`/${friend._id}/friend`}
-                  >
+                  <Link to={`/${friend._id}/friend/profile`}>
                     <img
                       src={
                         friend.profilePic.startsWith('https')

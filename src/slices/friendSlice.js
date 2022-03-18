@@ -5,19 +5,16 @@ import {
 } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const commentOnAFriendsPost = createAsyncThunk(
-  'friend/commentOnAFriendsPost',
-  async ({ token, postId, comment }, thunkAPI) => {
+export const getFriendsProfileData = createAsyncThunk(
+  'friend/getFriendsProfileData',
+  async ({ token, userId }, thunkAPI) => {
     try {
       const controller = new AbortController();
       const res = await axios({
-        method: 'POST',
-        url: `http://localhost:8000/api/posts/${postId}/comments`,
+        method: 'GET',
+        url: `http://localhost:8000/api/users/${userId}/profile/friends`,
         headers: {
           Authorization: `Bearer ${token}`,
-        },
-        data: {
-          comment,
         },
       });
       thunkAPI.signal.addEventListener('abort', () => {
@@ -89,39 +86,88 @@ export const dislikeAFriendsPost = createAsyncThunk(
   }
 );
 
+export const commentOnAFriendsPost = createAsyncThunk(
+  'friend/commentOnAFriendsPost',
+  async ({ token, postId, comment }, thunkAPI) => {
+    try {
+      const controller = new AbortController();
+      const res = await axios({
+        method: 'POST',
+        url: `http://localhost:8000/api/posts/${postId}/comments`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          comment,
+        },
+      });
+      thunkAPI.signal.addEventListener('abort', () => {
+        controller.abort();
+        return thunkAPI.rejectWithValue('Request Aborted!');
+      });
+      const data = await res.data;
+      if (res.data.status === 'error' || res.data.status === 'fail') {
+        throw new Error(res.data.message);
+      }
+      return data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  }
+);
+
+export const makeAPostOnFriendsWall = createAsyncThunk(
+  'friend/makeAPostOnFriendsWall',
+  async ({ token, formData }, thunkAPI) => {
+    try {
+      const res = await axios({
+        method: 'POST',
+        url: 'http://localhost:8000/api/posts',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        data: formData,
+      });
+      const data = await res.data;
+      if (res.data.status === 'error' || res.data.status === 'fail') {
+        throw new Error(res.data.message);
+      }
+      return data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  }
+);
+
 const initialFriendState = {
   friendProfile: null,
   friendPosts: [],
   error: null,
   errorMessage: null,
+  status: 'idle',
 };
 
 const friendSlice = createSlice({
   name: 'friend',
   initialState: initialFriendState,
   reducers: {
-    setFriendsProfileData(state, action) {
-      state.status = 'success';
-      const { user, posts } = action.payload;
-      state.friendPosts = posts;
-      state.friendProfile = user;
-    },
-    clearFriendsProfileData(state, action) {
+    clearFriendsProfileData() {
       return initialFriendState;
+    },
+    acknowledgeError(state) {
+      state.error = null;
     },
   },
   extraReducers: {
-    [commentOnAFriendsPost.fulfilled]: (state, action) => {
+    [getFriendsProfileData.fulfilled]: (state, action) => {
       state.status = 'success';
-      const { comment } = action.payload;
-      const postId = comment.post;
-      const foundPost = state.friendPosts.find(post => post._id === postId);
-      foundPost.comments.push(comment);
+      const { posts, user } = action.payload;
+      state.friendPosts = posts;
+      state.friendProfile = user;
+      state.friendPosts.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     },
-    [commentOnAFriendsPost.pending]: state => {
-      state.status = 'pending';
-    },
-    [commentOnAFriendsPost.rejected]: (state, action) => {
+    [getFriendsProfileData.rejected]: (state, action) => {
       state.status = 'failed';
       state.errorMessage = action.payload;
       state.error = !!state.errorMessage;
@@ -130,9 +176,7 @@ const friendSlice = createSlice({
       state.status = 'success';
       const { post, user } = action.payload;
       const foundPost = state.friendPosts.find(p => p._id === post._id);
-      const foundUser = post.likes.find(u => u._id === user);
-      foundPost.likes.push(foundUser);
-      return state;
+      foundPost.likes.push(user);
     },
     [likeAFriendsPost.pending]: state => {
       state.status = 'pending';
@@ -146,8 +190,7 @@ const friendSlice = createSlice({
       state.status = 'success';
       const { post, user } = action.payload;
       const foundPost = state.friendPosts.find(p => p._id === post._id);
-      foundPost.likes = foundPost.likes.filter(person => person._id !== user);
-      return state;
+      foundPost.likes = foundPost.likes.filter(person => person !== user);
     },
     [dislikeAFriendsPost.pending]: state => {
       state.status = 'pending';
@@ -157,12 +200,41 @@ const friendSlice = createSlice({
       state.errorMessage = action.payload;
       state.error = !!state.errorMessage;
     },
+    [commentOnAFriendsPost.fulfilled]: (state, action) => {
+      state.status = 'success';
+      const { comment } = action.payload;
+      const foundPost = state.friendPosts.find(
+        post => post._id === comment.post
+      );
+      foundPost.comments.push(comment);
+    },
+    [commentOnAFriendsPost.pending]: state => {
+      state.status = 'pending';
+    },
+    [commentOnAFriendsPost.rejected]: (state, action) => {
+      state.status = 'failed';
+      state.errorMessage = action.payload;
+      state.error = !!state.errorMessage;
+    },
+    [makeAPostOnFriendsWall.fulfilled]: (state, action) => {
+      state.status = 'success';
+      const { post } = action.payload;
+      state.friendPosts.push(post);
+      state.friendPosts.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    },
   },
 });
 
+export const friendStatus = state => state.friend.status;
+export const friendError = state => state.friend.error;
+export const friendErrorMessage = state => state.friend.errorMessage;
 export const friend = state => state.friend.friendProfile;
 export const friendsPosts = state => state.friend.friendPosts;
 export const selectFriendPostId = (state, postId) => postId;
+export const selectCurrentFriendPost = createSelector(
+  [friendsPosts, selectFriendPostId, (state, posts, postId) => postId],
+  (posts, postId) => posts.find(post => post._id === postId)
+);
 export const selectFriendPostComments = createSelector(
   [friendsPosts, selectFriendPostId, (state, posts, postId) => postId],
   (posts, postId) =>

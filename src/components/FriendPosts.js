@@ -3,72 +3,57 @@ import { MoreVert, ThumbUp, ThumbDown } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { format } from 'timeago.js';
+import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
 import Comments from './Comments';
 import { userToken, authorizedUser } from '../slices/authSlice';
-import {
-  postActions,
-  deleteAPost,
-  postError,
-  postErrorMessage,
-  postStatus,
-  selectPostId,
-} from '../slices/postSlice';
 import InputEmojiWithRef from 'react-input-emoji';
-import { likeAPost, dislikeAPost, commentOnAPost } from '../slices/postThunks';
+import { deleteAPost } from '../slices/postSlice';
+import {
+  commentOnAFriendsPost,
+  likeAFriendsPost,
+  dislikeAFriendsPost,
+  selectFriendPostId,
+  friendErrorMessage,
+  friendStatus,
+  selectCurrentFriendPost,
+} from '../slices/friendSlice';
+import { useHttp } from '../hooks/useHttp';
 import './Posts.css';
 
-// const selectPostComments = createSelector(
-//   [selectAllPosts, selectPostId, (state, posts, postId) => postId],
-//   (posts, postId) =>
-//     posts.flatMap(post =>
-//       post.comments.filter(comment => comment.post === postId)
-//     )
-// );
-
-const Post = props => {
-  const post = useSelector(state =>
-    state.post.posts.find(p => p._id === props.postId)
-  );
+const FriendPosts = props => {
+  const token = useSelector(userToken);
+  const authUser = useSelector(authorizedUser);
+  const postId = useSelector(state => selectFriendPostId(state, props.postId));
+  const post = useSelector(state => selectCurrentFriendPost(state, postId));
   const [numOfLikes, setNumOfLikes] = useState(post?.likes.length);
   const [isLiked, setIsLiked] = useState();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showCommentDropdown, setShowCommentDropdown] = useState(false);
   const [text, setText] = useState('');
-  const token = useSelector(userToken);
-  const authUser = useSelector(authorizedUser);
-  const postId = useSelector(state => selectPostId(state, props.postId));
-  const error = useSelector(postError);
-  const errorMessage = useSelector(postErrorMessage);
-  const status = useSelector(postStatus);
+  const { loading, error, sendRequest, clearError } = useHttp();
+  const errorMessage = useSelector(friendErrorMessage);
+  const status = useSelector(friendStatus);
   const dispatch = useDispatch();
   const postComment = useRef();
 
   useEffect(() => {
-    if (post.likes.some(p => p === authUser._id)) setIsLiked(true);
+    if (post.likes?.some(p => p === authUser._id)) setIsLiked(true);
   }, [authUser._id, post.likes]);
 
-  const clearError = () => {
-    dispatch(postActions.acknowledgeError());
-  };
-
-  const likeHandler = async () => {
-    await dispatch(likeAPost({ token, postId: postId }))
+  const friendLikeHandler = async () => {
+    await dispatch(likeAFriendsPost({ token, postId }))
       .unwrap()
       .then(data => {
-        console.log(data);
-        setIsLiked(true);
         setNumOfLikes(data.post.likes.length);
       });
   };
 
-  const dislikeHandler = async () => {
-    await dispatch(dislikeAPost({ token, postId: postId }))
+  const friendDislikeHandler = async () => {
+    await dispatch(dislikeAFriendsPost({ token, postId }))
       .unwrap()
       .then(data => {
-        console.log(data);
-        setIsLiked(false);
-        setNumOfLikes(data.post.likes.length);
+        setNumOfLikes(data.post.likes.length ?? 0);
       });
   };
 
@@ -85,24 +70,21 @@ const Post = props => {
   };
 
   const handleDeletePost = async () => {
-    dispatch(deleteAPost(postId));
+    dispatch(deleteAPost(props.postId));
   };
 
-  const handleOnEnter = async text => {
+  const handleFriendOnEnter = async text => {
     setText(text);
-    dispatch(
-      commentOnAPost({
-        token,
-        postId: postId,
-        comment: text,
-      })
-    );
+    dispatch(commentOnAFriendsPost({ token, postId, comment: text }));
   };
+
+  // if (status === 'idle' || status === 'pending') {
+  //   return <LoadingSpinner asOverlay />;
+  // }
 
   if (error) {
-    return <ErrorModal error={errorMessage} onClear={clearError} />;
+    return <ErrorModal error={error} onClear={clearError} />;
   }
-
   return (
     <div className="post">
       <div className="postWrapper">
@@ -132,7 +114,7 @@ const Post = props => {
               style={{ cursor: 'pointer' }}
               focusable="true"
             />
-            {authUser._id === props.user._id && showDropdown && (
+            {authUser._id === post.userId._id && showDropdown && (
               <div style={{ display: 'block' }} className="dropdown-content">
                 <span onClick={handleDeletePost} className="dropdown-option">
                   Delete
@@ -142,7 +124,7 @@ const Post = props => {
           </div>
         </div>
         <div className="postCenter">
-          <span className="postText">{post?.desc}</span>
+          <span className="postText">{post.desc}</span>
           {post.image && (
             <img
               className="postImg"
@@ -155,11 +137,11 @@ const Post = props => {
           <div className="postBottomLeft">
             <ThumbUp
               className={isLiked ? `likeIcon liked` : 'likeIcon'}
-              onClick={likeHandler}
+              onClick={friendLikeHandler}
             />
             <ThumbDown
               className={!isLiked ? 'likeIcon liked' : 'likeIcon'}
-              onClick={dislikeHandler}
+              onClick={friendDislikeHandler}
             />
             <span className="postLikeCounter">{numOfLikes} people like it</span>
           </div>
@@ -187,8 +169,9 @@ const Post = props => {
                 placeholder={'Leave a comment...'}
                 className="shareInput"
                 ref={postComment}
-                onEnter={handleOnEnter}
+                onEnter={handleFriendOnEnter}
                 onChange={setText}
+                cleanOnEnter="true"
                 value={text}
                 fontFamily={'Open Sans'}
               />
@@ -200,4 +183,4 @@ const Post = props => {
   );
 };
 
-export default Post;
+export default FriendPosts;

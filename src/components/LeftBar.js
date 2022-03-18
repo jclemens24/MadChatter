@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './LeftBar.css';
 import { Link } from 'react-router-dom';
 import {
@@ -26,7 +26,7 @@ const LeftBar = ({ user }) => {
   const [nearbyFriends, setNearbyFriends] = useState([]);
   const { loading, error, sendRequest, clearError } = useHttp();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const getNearbyFriends = async () => {
       const res = await sendRequest(
         `http://localhost:8000/api/users/${user.location.coordinates[0]},${user.location.coordinates[1]}`,
@@ -37,8 +37,14 @@ const LeftBar = ({ user }) => {
       setNearbyFriends(res.users.filter(user => user._id !== authUser._id));
     };
     getNearbyFriends();
-    return () => {};
-  }, [user, sendRequest]);
+    return () => {
+      setNearbyFriends([]);
+    };
+  }, [user, sendRequest, authUser, token]);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   if (error) {
     return <ErrorModal error={error} onClear={clearError} />;
@@ -102,7 +108,6 @@ const LeftBar = ({ user }) => {
         <hr className="sidebarHr" />
         <h4>People You May Know</h4>
         <ul className="sidebarFriendList">
-          {loading && <LoadingSpinner asOverlay />}
           {nearbyFriends?.map(friend => (
             <UsersNearby key={friend._id} user={friend} />
           ))}

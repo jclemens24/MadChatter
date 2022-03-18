@@ -1,49 +1,47 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import LeftBar from '../components/LeftBar';
 import RightBar from '../components/RightBar';
-import UserFeed from '../components/UserFeed';
+import FriendUserFeed from '../components/FriendUserFeed';
 import './FriendProfile.css';
-import { useParams, Outlet } from 'react-router-dom';
+import { Outlet, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { useHttp } from '../hooks/useHttp';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
+import { friendAction, getFriendsProfileData } from '../slices/friendSlice';
 import { userToken } from '../slices/authSlice';
-import { friendAction } from '../slices/friendSlice';
 
-const FriendProfile = () => {
-  const { userId } = useParams();
-  const [friendsData, setFriendsData] = useState({});
-  const [posts, setPosts] = useState([]);
+const FriendProfile = props => {
+  const status = useSelector(state => state.friend.status);
+  const error = useSelector(state => state.friend.error);
+  const userId = useParams().userId;
   const token = useSelector(userToken);
-  const { loading, error, sendRequest, clearError } = useHttp();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchFriendsData = async () => {
-      const res = await sendRequest(
-        `http://localhost:8000/api/users/${userId}/profile/friends`,
-        'GET',
-        {
-          Authorization: `Bearer ${token}`,
-        }
-      );
-      setFriendsData(res.user);
-      setPosts(res.posts);
-      dispatch(friendAction.setFriendsProfileData(res));
-    };
-    fetchFriendsData();
+    dispatch(getFriendsProfileData({ token, userId }))
+      .unwrap()
+      .then(data => {
+        console.log(data);
+      });
     return () => {
       dispatch(friendAction.clearFriendsProfileData());
     };
-  }, [userId, token, sendRequest]);
+  }, [userId, token, dispatch]);
 
-  if (loading) {
+  const clearError = () => {
+    dispatch(friendAction.acknowledgeError());
+  };
+
+  const friendsData = useSelector(state => state.friend.friendProfile);
+  const friendPosts = useSelector(state => state.friend.friendPosts);
+
+  while (status === 'idle') {
     return <LoadingSpinner asOverlay />;
   }
   if (error) {
     return <ErrorModal error={error} onClear={clearError} />;
   }
+
   return (
     <React.Fragment>
       <div className="profile">
@@ -70,7 +68,7 @@ const FriendProfile = () => {
             </div>
           </div>
           <div className="profile__right--bottom">
-            <UserFeed user={friendsData} posts={posts} />
+            <FriendUserFeed user={friendsData} />
             <RightBar user={friendsData} />
           </div>
         </div>

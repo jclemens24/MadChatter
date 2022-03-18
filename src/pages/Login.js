@@ -21,7 +21,7 @@ const Login = props => {
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigate(`${authUser._id}/profile`);
+      navigate(`${authUser._id}/profile`, { state: 'authProfile' });
     }
   }, [authUser, isLoggedIn, navigate]);
 

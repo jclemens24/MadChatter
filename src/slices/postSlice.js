@@ -23,7 +23,6 @@ const postSlice = createSlice({
     setPosts(state, action) {
       state.posts.push(...action.payload.posts);
       state.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      return state;
     },
     clearPosts() {
       return initialPostState;
@@ -57,9 +56,7 @@ const postSlice = createSlice({
       state.status = 'success';
       const { post, user } = action.payload;
       const foundPost = state.posts.find(p => p._id === post._id);
-      const foundUser = post.likes.find(u => u._id === user);
-      foundPost.likes.push(foundUser);
-      return state;
+      foundPost.likes.push(user);
     },
     [likeAPost.pending]: state => {
       state.status = 'pending';
@@ -73,8 +70,7 @@ const postSlice = createSlice({
       state.status = 'success';
       const { post, user } = action.payload;
       const foundPost = state.posts.find(p => p._id === post._id);
-      foundPost.likes = foundPost.likes.filter(person => person._id !== user);
-      return state;
+      foundPost.likes = foundPost.likes.filter(person => person !== user);
     },
     [dislikeAPost.pending]: state => {
       state.status = 'pending';
@@ -125,14 +121,6 @@ export const selectPostById = (state, postId) =>
   state.post.posts.find(post => post._id === postId);
 
 export const selectPostId = (state, postId) => postId;
-
-export const selectPostComments = createSelector(
-  [selectAllPosts, selectPostId, (state, posts, postId) => postId],
-  (posts, postId) =>
-    posts.flatMap(post =>
-      post.comments.filter(comment => comment.post === postId)
-    )
-);
 
 export const selectAllTimelinePosts = state => state.post.timelineFeed;
 

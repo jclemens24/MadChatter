@@ -211,7 +211,7 @@ const Profile = () => {
             </div>
           </div>
           <div className="profile__right--bottom">
-            <UserFeed user={authUser} posts={posts} />
+            <UserFeed user={authUser} />
             <RightBar user={authUser} />
           </div>
           <Outlet />
