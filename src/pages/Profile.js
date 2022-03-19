@@ -1,29 +1,27 @@
 import React, { useState } from 'react';
+import './Profile.css';
 import { Outlet } from 'react-router-dom';
 import LeftBar from '../components/LeftBar';
 import RightBar from '../components/RightBar';
 import UserFeed from '../components/UserFeed';
-import './Profile.css';
-import { useSelector, useDispatch } from 'react-redux';
-import { PhotoCamera, PhotoSizeSelectActual } from '@mui/icons-material';
+import ErrorModal from '../UI/ErrorModal';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import Modal from '../UI/Modal';
+import { useSelector, useDispatch } from 'react-redux';
+import { PhotoCamera, PhotoSizeSelectActual } from '@mui/icons-material';
 import { useHttp } from '../hooks/useHttp';
-import ErrorModal from '../UI/ErrorModal';
 import {
   authAction,
   userToken,
   authorizedUser,
   authError,
 } from '../slices/authSlice';
-import { selectAllPosts } from '../slices/postSlice';
 
 const Profile = () => {
   const dispatch = useDispatch();
   const authUser = useSelector(authorizedUser);
   const token = useSelector(userToken);
   const appError = useSelector(authError);
-  const posts = useSelector(selectAllPosts);
   const { loading, error, sendRequest, clearError } = useHttp();
   const { status } = useSelector(state => state.auth);
   const [previewUrl, setPreviewUrl] = useState(null);

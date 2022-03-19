@@ -3,7 +3,6 @@ import { MoreVert, ThumbUp, ThumbDown } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { format } from 'timeago.js';
-import LoadingSpinner from '../UI/LoadingSpinner';
 import ErrorModal from '../UI/ErrorModal';
 import Comments from './Comments';
 import { userToken, authorizedUser } from '../slices/authSlice';
@@ -15,10 +14,10 @@ import {
   dislikeAFriendsPost,
   selectFriendPostId,
   friendErrorMessage,
-  friendStatus,
   selectCurrentFriendPost,
+  friendError,
+  friendAction,
 } from '../slices/friendSlice';
-import { useHttp } from '../hooks/useHttp';
 import './Posts.css';
 
 const FriendPosts = props => {
@@ -31,9 +30,8 @@ const FriendPosts = props => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showCommentDropdown, setShowCommentDropdown] = useState(false);
   const [text, setText] = useState('');
-  const { loading, error, sendRequest, clearError } = useHttp();
+  const error = useSelector(friendError);
   const errorMessage = useSelector(friendErrorMessage);
-  const status = useSelector(friendStatus);
   const dispatch = useDispatch();
   const postComment = useRef();
 
@@ -41,11 +39,16 @@ const FriendPosts = props => {
     if (post.likes?.some(p => p === authUser._id)) setIsLiked(true);
   }, [authUser._id, post.likes]);
 
+  const clearError = () => {
+    dispatch(friendAction.acknowledgeError());
+  };
+
   const friendLikeHandler = async () => {
     await dispatch(likeAFriendsPost({ token, postId }))
       .unwrap()
       .then(data => {
         setNumOfLikes(data.post.likes.length);
+        setIsLiked(true);
       });
   };
 
@@ -54,6 +57,7 @@ const FriendPosts = props => {
       .unwrap()
       .then(data => {
         setNumOfLikes(data.post.likes.length ?? 0);
+        setIsLiked(false);
       });
   };
 
@@ -78,12 +82,8 @@ const FriendPosts = props => {
     dispatch(commentOnAFriendsPost({ token, postId, comment: text }));
   };
 
-  // if (status === 'idle' || status === 'pending') {
-  //   return <LoadingSpinner asOverlay />;
-  // }
-
   if (error) {
-    return <ErrorModal error={error} onClear={clearError} />;
+    return <ErrorModal error={errorMessage} onClear={clearError} />;
   }
   return (
     <div className="post">
@@ -97,15 +97,15 @@ const FriendPosts = props => {
                   : `/${props.user._id}/profile/friend`
               }
             >
-              {props.user.profilePic && (
+              {post.fromUser.profilePic && (
                 <img
                   className="postProfileImg"
-                  src={`http://localhost:8000/${props.user.profilePic}`}
-                  alt=""
+                  src={`http://localhost:8000/${post.fromUser.profilePic}`}
+                  alt={`${post.fromUser.firstName}`}
                 />
               )}
             </Link>
-            <span className="postUsername">{`${props.user.firstName} ${props.user.lastName}`}</span>
+            <span className="postUsername">{`${post.fromUser.firstName} ${post.fromUser.lastName}`}</span>
             <span className="postDate">{format(post.createdAt)}</span>
           </div>
           <div className="postTopRight dropdown">
@@ -114,7 +114,7 @@ const FriendPosts = props => {
               style={{ cursor: 'pointer' }}
               focusable="true"
             />
-            {authUser._id === post.userId._id && showDropdown && (
+            {authUser._id === post.fromUser._id && showDropdown && (
               <div style={{ display: 'block' }} className="dropdown-content">
                 <span onClick={handleDeletePost} className="dropdown-option">
                   Delete
@@ -147,7 +147,7 @@ const FriendPosts = props => {
           </div>
           <div className="postBottomRight">
             <span onClick={handleCommentClick} className="postCommentText">
-              comments
+              {`${post.comments?.length} comments`}
             </span>
           </div>
         </div>

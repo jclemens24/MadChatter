@@ -1,5 +1,6 @@
 import React from 'react';
 import { format } from 'timeago.js';
+import Reactions from './Reactions';
 import './Comments.css';
 
 export default function Comments({ comment }) {
@@ -19,6 +20,7 @@ export default function Comments({ comment }) {
             <p className="commentText">{comment.comment}</p>
           </div>
           <div className="commentBottom">
+            <Reactions comment={comment} />
             <div className="commentBottomRight">
               <span>{format(comment.createdAt)}</span>
             </div>

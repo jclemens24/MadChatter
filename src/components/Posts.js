@@ -11,20 +11,11 @@ import {
   deleteAPost,
   postError,
   postErrorMessage,
-  postStatus,
   selectPostId,
 } from '../slices/postSlice';
 import InputEmojiWithRef from 'react-input-emoji';
 import { likeAPost, dislikeAPost, commentOnAPost } from '../slices/postThunks';
 import './Posts.css';
-
-// const selectPostComments = createSelector(
-//   [selectAllPosts, selectPostId, (state, posts, postId) => postId],
-//   (posts, postId) =>
-//     posts.flatMap(post =>
-//       post.comments.filter(comment => comment.post === postId)
-//     )
-// );
 
 const Post = props => {
   const post = useSelector(state =>
@@ -40,7 +31,6 @@ const Post = props => {
   const postId = useSelector(state => selectPostId(state, props.postId));
   const error = useSelector(postError);
   const errorMessage = useSelector(postErrorMessage);
-  const status = useSelector(postStatus);
   const dispatch = useDispatch();
   const postComment = useRef();
 
@@ -56,7 +46,6 @@ const Post = props => {
     await dispatch(likeAPost({ token, postId: postId }))
       .unwrap()
       .then(data => {
-        console.log(data);
         setIsLiked(true);
         setNumOfLikes(data.post.likes.length);
       });
@@ -66,7 +55,6 @@ const Post = props => {
     await dispatch(dislikeAPost({ token, postId: postId }))
       .unwrap()
       .then(data => {
-        console.log(data);
         setIsLiked(false);
         setNumOfLikes(data.post.likes.length);
       });
@@ -93,7 +81,7 @@ const Post = props => {
     dispatch(
       commentOnAPost({
         token,
-        postId: postId,
+        postId,
         comment: text,
       })
     );
@@ -115,15 +103,15 @@ const Post = props => {
                   : `/${props.user._id}/profile/friend`
               }
             >
-              {props.user.profilePic && (
+              {post.fromUser.profilePic && (
                 <img
                   className="postProfileImg"
-                  src={`http://localhost:8000/${props.user.profilePic}`}
-                  alt=""
+                  src={`http://localhost:8000/${post.fromUser.profilePic}`}
+                  alt={`${post.fromUser.firstName}`}
                 />
               )}
             </Link>
-            <span className="postUsername">{`${props.user.firstName} ${props.user.lastName}`}</span>
+            <span className="postUsername">{`${post.fromUser.firstName} ${post.fromUser.lastName}`}</span>
             <span className="postDate">{format(post.createdAt)}</span>
           </div>
           <div className="postTopRight dropdown">
@@ -165,7 +153,7 @@ const Post = props => {
           </div>
           <div className="postBottomRight">
             <span onClick={handleCommentClick} className="postCommentText">
-              comments
+              {`${post.comments?.length} comments`}
             </span>
           </div>
         </div>

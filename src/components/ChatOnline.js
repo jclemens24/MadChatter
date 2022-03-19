@@ -14,6 +14,10 @@ export default function ChatOnline(props) {
     setOnlineFriends(
       friends.filter(friend => props.onlineUsers.includes(friend._id))
     );
+    return () => {
+      setFriends([]);
+      setOnlineFriends([]);
+    };
   }, [friends, props.onlineUsers, props.user.following]);
 
   const handleClick = async friend => {

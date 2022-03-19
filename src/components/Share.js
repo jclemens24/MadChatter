@@ -21,6 +21,8 @@ const Share = props => {
       .unwrap()
       .then(() => {
         setText('');
+        setPreviewUrl(null);
+        setFile(null);
       });
   };
 
@@ -29,6 +31,8 @@ const Share = props => {
       .unwrap()
       .then(() => {
         setText('');
+        setPreviewUrl(null);
+        setFile(null);
       });
   };
 
@@ -38,6 +42,7 @@ const Share = props => {
     formData.append('desc', text);
     formData.append('image', file);
     formData.append('to', props.user._id);
+    formData.append('from', authUser._id);
 
     props.user._id === authUser._id
       ? sendPostRequestOnOwnWall(formData)

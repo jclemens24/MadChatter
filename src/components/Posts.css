@@ -78,8 +78,9 @@
 
 .postCommentText {
   cursor: pointer;
-  border-bottom: 1px dashed gray;
+  color: #adb5bd;
   font-size: 15px;
+  border-bottom: 1px solid #adb5bd;
 }
 
 .dropdown {

@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import Card from '../UI/Card';
 import './PhotoItem.css';
 import { useHttp } from '../hooks/useHttp';
@@ -13,8 +14,9 @@ export default function PhotoItem(props) {
   const dispatch = useDispatch();
   const { userId } = useParams();
   const { loading, error, sendRequest, clearError } = useHttp();
+  const [pictureOptions, setPictureOptions] = useState(false);
 
-  const handlePictureSubmit = async () => {
+  const handleProfilePictureSubmit = async () => {
     await sendRequest(
       `http://localhost:8000/api/users/${userId}/photos`,
       'PUT',
@@ -24,6 +26,17 @@ export default function PhotoItem(props) {
     dispatch(authAction.setProfilePic({ photo: props.photo }));
     props.onClear();
   };
+
+  const handleCoverPictureSubmit = async () => {
+    await sendRequest(
+      `http://localhost:8000/api/users/photos/${props.photo}`,
+      'PUT',
+      { Authorization: `Bearer ${token}` }
+    );
+    dispatch(authAction.updateCoverPic({ photo: props.photo }));
+    props.onClear();
+  };
+
   const handlePictureDelete = async () => {
     await sendRequest(
       `http://localhost:8000/api/users/photos/${props.photo}`,
@@ -34,13 +47,19 @@ export default function PhotoItem(props) {
     props.onClear();
   };
 
+  const showDropDownHandler = () => {
+    setPictureOptions(prevState => {
+      return !prevState;
+    });
+  };
+
   if (error) {
     return <ErrorModal error={error} onClear={clearError} />;
   }
   return (
     <li className="photo-item">
       <Card>
-        {loading && <LoadingSpinner asOverlay />}
+        {loading && <LoadingSpinner />}
         <div className="photo-image">
           <img
             className="images"
@@ -57,10 +76,28 @@ export default function PhotoItem(props) {
             <button
               type="button"
               className="btn photo-actions"
-              onClick={handlePictureSubmit.bind(null, props.photo)}
+              onClick={showDropDownHandler}
             >
               Set As...
             </button>
+            <div className="dropdown">
+              {pictureOptions && (
+                <div style={{ display: 'block' }} className="dropdown-content">
+                  <span
+                    className="dropdown-option"
+                    onClick={handleProfilePictureSubmit.bind(null, props.photo)}
+                  >
+                    Profile Picture
+                  </span>
+                  <span
+                    className="dropdown-option"
+                    onClick={handleCoverPictureSubmit.bind(null, props.photo)}
+                  >
+                    Cover Picture
+                  </span>
+                </div>
+              )}
+            </div>
             <button
               type="button"
               className="btn photo-actions"

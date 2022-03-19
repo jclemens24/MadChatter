@@ -33,7 +33,6 @@ const LeftBar = ({ user }) => {
         'GET',
         { Authorization: `Bearer ${token}` }
       );
-
       setNearbyFriends(res.users.filter(user => user._id !== authUser._id));
     };
     getNearbyFriends();

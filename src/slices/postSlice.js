@@ -6,6 +6,7 @@ import {
   commentOnAPost,
   getTimelineFeedPosts,
 } from './postThunks';
+import { friendAction } from './friendSlice';
 import axios from 'axios';
 
 const initialPostState = {
@@ -117,10 +118,14 @@ export const postError = state => state.post.error;
 export const postErrorMessage = state => state.post.errorMessage;
 export const postStatus = state => state.post.status;
 export const selectAllPosts = state => state.post.posts;
-export const selectPostById = (state, postId) =>
-  state.post.posts.find(post => post._id === postId);
-
 export const selectPostId = (state, postId) => postId;
+export const selectPostComments = createSelector(
+  [selectAllPosts, selectPostId, (state, posts, postId) => postId],
+  (posts, postId) =>
+    posts.flatMap(post =>
+      post.comments.filter(comment => comment.post === postId)
+    )
+);
 
 export const selectAllTimelinePosts = state => state.post.timelineFeed;
 
@@ -142,6 +147,7 @@ export const deleteAPost = postId => {
     try {
       await postToDelete();
       dispatch(postActions.deletePost(postId));
+      dispatch(friendAction.deleteAPost(postId));
     } catch (err) {
       throw new Error(err.response.data.message);
     }

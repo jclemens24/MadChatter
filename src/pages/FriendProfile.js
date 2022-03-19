@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import LeftBar from '../components/LeftBar';
 import RightBar from '../components/RightBar';
 import FriendUserFeed from '../components/FriendUserFeed';
-import './FriendProfile.css';
+import './Profile.css';
 import { Outlet, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import LoadingSpinner from '../UI/LoadingSpinner';
@@ -13,6 +13,7 @@ import { userToken } from '../slices/authSlice';
 const FriendProfile = props => {
   const status = useSelector(state => state.friend.status);
   const error = useSelector(state => state.friend.error);
+  const errorMessage = useSelector(state => state.friend.errorMessage);
   const userId = useParams().userId;
   const token = useSelector(userToken);
   const dispatch = useDispatch();
@@ -33,13 +34,12 @@ const FriendProfile = props => {
   };
 
   const friendsData = useSelector(state => state.friend.friendProfile);
-  const friendPosts = useSelector(state => state.friend.friendPosts);
 
   while (status === 'idle') {
     return <LoadingSpinner asOverlay />;
   }
   if (error) {
-    return <ErrorModal error={error} onClear={clearError} />;
+    return <ErrorModal error={errorMessage} onClear={clearError} />;
   }
 
   return (
@@ -51,7 +51,7 @@ const FriendProfile = props => {
             <div className="profile__cover-pic">
               <img
                 className="profile__cover-image"
-                src={`${friendsData.coverPic}`}
+                src={`http://localhost:8000/${friendsData.coverPic}`}
                 alt={`${friendsData.firstName} profile`}
               />
               <img

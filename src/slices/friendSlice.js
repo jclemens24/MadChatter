@@ -158,6 +158,22 @@ const friendSlice = createSlice({
     acknowledgeError(state) {
       state.error = null;
     },
+    deleteAPost(state, action) {
+      const foundPost = state.friendPosts.find(
+        post => post._id === action.payload
+      );
+      if (foundPost) {
+        state.friendPosts = state.friendPosts.filter(
+          post => post._id !== foundPost._id
+        );
+      }
+    },
+    reactionAdded(state, action) {
+      const { commentId, reaction } = action.payload;
+      const comments = state.friendPosts.flatMap(post => post.comments);
+      const foundComment = comments.find(comment => comment._id === commentId);
+      foundComment.reactions[reaction]++;
+    },
   },
   extraReducers: {
     [getFriendsProfileData.fulfilled]: (state, action) => {

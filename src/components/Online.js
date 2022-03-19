@@ -7,11 +7,7 @@ const Online = props => {
       <div className="rightbarProfileImgContainer">
         <img
           className="rightbarProfileImg"
-          src={
-            props.user.profilePic.startsWith('https')
-              ? `${props.user.profilePic}`
-              : `http://localhost:8000/${props.user.profilePic}`
-          }
+          src={`http://localhost:8000/${props.user.profilePic}`}
           alt=""
         />
         <span className="rightbarOnline"></span>
