@@ -16,7 +16,7 @@ exports.validateAUser = catchAsync(async (req, res, next) => {
   });
   if (!user) return next(new AppError('User could not be found', 404));
 
-  const posts = await Post.find({ userId: userId }).populate({
+  const posts = await Post.find({ toUser: userId }).populate({
     path: 'comments'
   });
 
@@ -119,7 +119,8 @@ exports.suggestFriends = catchAsync(async (req, res, next) => {
         lastName: true,
         profilePic: true
       }
-    }
+    },
+    { $limit: 10 }
   ]);
   res.status(200).json({
     status: 'success',
@@ -150,6 +151,19 @@ exports.setUserPhoto = catchAsync(async (req, res, next) => {
     {
       new: true
     }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    user: updatePhoto
+  });
+});
+
+exports.setUserCoverPhoto = catchAsync(async (req, res, next) => {
+  const updatePhoto = await User.findByIdAndUpdate(
+    req.user._id,
+    { coverPic: req.params.pid },
+    { new: true }
   );
 
   res.status(200).json({

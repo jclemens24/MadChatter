@@ -14,7 +14,7 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
 });
 
 exports.getPostByUser = catchAsync(async (req, res, next) => {
-  const posts = await Post.find({ userId: req.params.userId }).populate({
+  const posts = await Post.find({ toUser: req.params.userId }).populate({
     path: 'comments'
   });
 
@@ -69,7 +69,8 @@ exports.createANewPost = catchAsync(async (req, res, next) => {
   }
 
   const newPost = await Post.create({
-    userId: req.body.to,
+    toUser: req.body.to,
+    fromUser: req.body.from,
     desc: req.body.desc,
     image: image
   });
@@ -134,7 +135,7 @@ exports.deleteOnePost = catchAsync(async (req, res, next) => {
 });
 
 exports.getAFriendsPosts = catchAsync(async (req, res, next) => {
-  const friendPost = await Post.find({ userId: req.friend._id }).populate({
+  const friendPost = await Post.find({ toUser: req.friend._id }).populate({
     path: 'comments'
   });
 

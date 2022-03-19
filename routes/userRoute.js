@@ -27,7 +27,10 @@ router
     userController.uploadCoverPhoto
   );
 
-router.patch('/photos/:pid', userController.deleteUserPhoto);
+router
+  .route('/photos/:pid')
+  .patch(userController.deleteUserPhoto)
+  .put(userController.setUserCoverPhoto);
 
 router.route('/:userId/friends').patch(userController.unfollowAndFollowAFriend);
 

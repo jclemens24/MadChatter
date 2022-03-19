@@ -18,6 +18,16 @@ const commentSchema = new mongoose.Schema(
       minlength: [3, 'A comment must be at least 3 characters'],
       maxlength: [1000, 'A comment cannot be longer than 1000 characters'],
       trim: true
+    },
+    reactions: {
+      thumbsUp: Number,
+      heart: Number,
+      rocket: Number,
+      eyes: Number,
+      lol: Number,
+      hooray: Number,
+      angryFace: Number,
+      sadFace: Number
     }
   },
   {

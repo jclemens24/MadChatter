@@ -101,7 +101,13 @@ const userSchema = new mongoose.Schema(
 
 userSchema.virtual('posts', {
   ref: 'Post',
-  foreignField: 'userId',
+  foreignField: 'toUser',
+  localField: '_id'
+});
+
+userSchema.virtual('posts', {
+  ref: 'Post',
+  foreignField: 'fromUser',
   localField: '_id'
 });
 

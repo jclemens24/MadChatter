@@ -2,9 +2,15 @@ const mongoose = require('mongoose');
 
 const postSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.ObjectId,
-      ref: 'User'
+    toUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'A post must be sent to a user']
+    },
+    fromUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'A post must be sent from a user']
     },
     desc: {
       type: String,
@@ -16,7 +22,7 @@ const postSchema = new mongoose.Schema(
     },
     likes: [
       {
-        type: mongoose.Schema.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         default: [],
         unique: false
@@ -36,9 +42,14 @@ const postSchema = new mongoose.Schema(
 
 postSchema.pre(/^find/, function (next) {
   this.populate({
-    path: 'userId',
+    path: 'toUser',
     select:
-      '-__v -passwordConfirm -email -coverPic -followers -following -birthYear -photos -catchPhrase'
+      '-__v -passwordConfirm -email -coverPic -followers -following -birthYear -photos -catchPhrase -location',
+    options: { _recursed: true }
+  }).populate({
+    path: 'fromUser',
+    select:
+      '-__v -passwordConfirm -email -coverPic -followers -following -birthYear -photos -catchPhrase -location'
   });
   next();
 });
@@ -52,9 +63,10 @@ postSchema.virtual('comments', {
 postSchema.post('save', (doc, next) => {
   doc
     .populate({
-      path: 'userId',
+      path: 'toUser fromUser',
       select:
-        '-__v -passwordConfirm -email -coverPic -followers -following -birthYear -photos -catchPhrase'
+        '-__v -passwordConfirm -email -coverPic -followers -following -birthYear -photos -catchPhrase -location',
+      options: { _recursed: true }
     })
     .then(() => {
       next();
