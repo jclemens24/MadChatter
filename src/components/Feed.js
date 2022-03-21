@@ -1,49 +1,37 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { MoreVert, ThumbUp, ThumbDown } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { authorizedUser, userToken } from '../slices/authSlice';
+import { Link } from 'react-router-dom';
 import { format } from 'timeago.js';
-import ErrorModal from '../UI/ErrorModal';
+import { MoreVert, ThumbUp, ThumbDown } from '@mui/icons-material';
 import Comments from './Comments';
-import { userToken, authorizedUser } from '../slices/authSlice';
-import {
-  postActions,
-  deleteAPost,
-  postError,
-  postErrorMessage,
-  selectPostId,
-} from '../slices/postSlice';
+import { deleteAPost } from '../slices/postSlice';
 import InputEmojiWithRef from 'react-input-emoji';
 import { likeAPost, dislikeAPost, commentOnAPost } from '../slices/postThunks';
+import { postActions } from '../slices/postSlice';
 import './Posts.css';
 
-const Post = props => {
-  const post = useSelector(state =>
-    state.post.posts.find(p => p._id === props.postId)
-  );
-  const [numOfLikes, setNumOfLikes] = useState(post?.likes.length);
-  const [isLiked, setIsLiked] = useState();
+export default function Feed(props) {
+  const authUser = useSelector(authorizedUser);
+  const token = useSelector(userToken);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showCommentDropdown, setShowCommentDropdown] = useState(false);
+  const [numOfLikes, setNumOfLikes] = useState(props.post?.likes.length);
+  const [isLiked, setIsLiked] = useState();
   const [text, setText] = useState('');
-  const token = useSelector(userToken);
-  const authUser = useSelector(authorizedUser);
-  const postId = useSelector(state => selectPostId(state, props.postId));
-  const error = useSelector(postError);
-  const errorMessage = useSelector(postErrorMessage);
   const dispatch = useDispatch();
   const postComment = useRef();
 
   useEffect(() => {
-    if (post.likes.some(p => p === authUser._id)) setIsLiked(true);
-  }, [authUser._id, post.likes]);
+    if (props.post.likes.some(p => p === authUser._id)) setIsLiked(true);
+  }, [authUser._id, props.post.likes]);
 
   const clearError = () => {
     dispatch(postActions.acknowledgeError());
   };
 
   const likeHandler = async () => {
-    await dispatch(likeAPost({ token, postId: postId }))
+    await dispatch(likeAPost({ token, postId: props.post._id }))
       .unwrap()
       .then(data => {
         setIsLiked(true);
@@ -52,7 +40,7 @@ const Post = props => {
   };
 
   const dislikeHandler = async () => {
-    await dispatch(dislikeAPost({ token, postId: postId }))
+    await dispatch(dislikeAPost({ token, postId: props.post._id }))
       .unwrap()
       .then(data => {
         setIsLiked(false);
@@ -73,7 +61,7 @@ const Post = props => {
   };
 
   const handleDeletePost = async () => {
-    dispatch(deleteAPost(postId));
+    dispatch(deleteAPost(props.post._id));
   };
 
   const handleOnEnter = async text => {
@@ -81,15 +69,11 @@ const Post = props => {
     dispatch(
       commentOnAPost({
         token,
-        postId,
+        postId: props.post._id,
         comment: text,
       })
     );
   };
-
-  if (error) {
-    return <ErrorModal error={errorMessage} onClear={clearError} />;
-  }
 
   return (
     <div className="post">
@@ -103,16 +87,16 @@ const Post = props => {
                   : `/${props.user._id}/profile/friend`
               }
             >
-              {post.fromUser.profilePic && (
+              {props.post.fromUser.profilePic && (
                 <img
                   className="postProfileImg"
-                  src={`http://localhost:8000/${post.fromUser.profilePic}`}
-                  alt={`${post.fromUser.firstName}`}
+                  src={`http://localhost:8000/${props.post.fromUser.profilePic}`}
+                  alt={`${props.post.fromUser.firstName}`}
                 />
               )}
             </Link>
-            <span className="postUsername">{`${post.fromUser.firstName} ${post.fromUser.lastName}`}</span>
-            <span className="postDate">{format(post.createdAt)}</span>
+            <span className="postUsername">{`${props.post.fromUser.firstName} ${props.post.fromUser.lastName}`}</span>
+            <span className="postDate">{format(props.post.createdAt)}</span>
           </div>
           <div className="postTopRight dropdown">
             <MoreVert
@@ -130,11 +114,11 @@ const Post = props => {
           </div>
         </div>
         <div className="postCenter">
-          <span className="postText">{post?.desc}</span>
-          {post.image && (
+          <span className="postText">{props.post?.desc}</span>
+          {props.post.image && (
             <img
               className="postImg"
-              src={`http://localhost:8000/${post.image}`}
+              src={`http://localhost:8000/${props.post.image}`}
               alt=""
             />
           )}
@@ -153,7 +137,7 @@ const Post = props => {
           </div>
           <div className="postBottomRight">
             <span onClick={handleCommentClick} className="postCommentText">
-              {`${post.comments?.length} comments`}
+              {`${props.post.comments?.length} comments`}
             </span>
           </div>
         </div>
@@ -161,10 +145,10 @@ const Post = props => {
       {showCommentDropdown && (
         <div style={{ display: 'block' }} className="dropdown-comment">
           <ul className="comments">
-            {post.comments?.length === 0 ? (
+            {props.post.comments?.length === 0 ? (
               <span>Be the first to comment</span>
             ) : (
-              post.comments?.map(comment => (
+              props.post.comments?.map(comment => (
                 <Comments comment={comment} key={comment.id} />
               ))
             )}
@@ -186,6 +170,4 @@ const Post = props => {
       )}
     </div>
   );
-};
-
-export default Post;
+}

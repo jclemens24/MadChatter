@@ -36,6 +36,14 @@ const postSlice = createSlice({
       state.error = false;
       state.errorMessage = '';
     },
+    reactionAdded(state, action) {
+      const { commentId, reaction } = action.payload;
+      const comments = state.posts.flatMap(post => post.comments);
+      const foundComment = comments.find(comment => comment._id === commentId);
+      if (foundComment) {
+        foundComment.reactions[reaction]++;
+      }
+    },
   },
   extraReducers: {
     [makeAPost.fulfilled]: (state, action) => {

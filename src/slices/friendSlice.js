@@ -172,7 +172,9 @@ const friendSlice = createSlice({
       const { commentId, reaction } = action.payload;
       const comments = state.friendPosts.flatMap(post => post.comments);
       const foundComment = comments.find(comment => comment._id === commentId);
-      foundComment.reactions[reaction]++;
+      if (foundComment) {
+        foundComment.reactions[reaction]++;
+      }
     },
   },
   extraReducers: {

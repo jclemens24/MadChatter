@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Post from '../components/Posts';
+import Feed from '../components/Feed';
 import Share from '../components/Share';
 import './TimelineFeed.css';
 import { useSelector } from 'react-redux';
@@ -43,7 +43,7 @@ const TimelineFeed = () => {
         <div className="timeline__feed__wrapper">
           {authUser._id && authUser.firstName && <Share user={authUser} />}
           {allPosts?.map(p => (
-            <Post key={p._id} post={p} user={p.userId} />
+            <Feed key={p._id} post={p} user={p.toUser} />
           ))}
         </div>
       </div>

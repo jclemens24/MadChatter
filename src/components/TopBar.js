@@ -7,7 +7,7 @@ import {
   ChatOutlined,
   Logout,
 } from '@mui/icons-material';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../slices/authActions';
 
@@ -16,11 +16,27 @@ const TopBar = () => {
   const userId = useSelector(state => state.auth.user?._id);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleLogout = async () => {
     dispatch(logout());
     navigate('/');
   };
+
+  const handleSearchInput = event => {
+    const filter = event.target.value;
+    if (filter) {
+      setSearchParams({ filter });
+    } else {
+      setSearchParams({});
+    }
+  };
+
+  const handleSearch = async event => {
+    event.preventDefault();
+    const query = searchParams.get('filter');
+  };
+
   return (
     <div className="topbar__container">
       <div className="topbar__left">
@@ -30,13 +46,17 @@ const TopBar = () => {
       </div>
       {isLoggedIn && (
         <div className="topbar__center">
-          <div className="search">
-            <SearchOutlined className="search__icon"></SearchOutlined>
-            <input
-              placeholder="Search for friends, posts, or videos"
-              className="search__input"
-            />
-          </div>
+          <form onSubmit={handleSearch}>
+            <div className="search">
+              <SearchOutlined className="search__icon"></SearchOutlined>
+              <input
+                placeholder="Search for friends, posts, or videos"
+                className="search__input"
+                onChange={handleSearchInput}
+                value={searchParams.get('filter') || ''}
+              />
+            </div>
+          </form>
         </div>
       )}
       {isLoggedIn && (

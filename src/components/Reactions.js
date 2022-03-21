@@ -1,6 +1,7 @@
 import './Reactions.css';
 import { useDispatch } from 'react-redux';
 import { friendAction } from '../slices/friendSlice';
+import { postActions } from '../slices/postSlice';
 
 const reactionEmoji = {
   thumbsUp: '👍',
@@ -24,6 +25,12 @@ export default function Reactions({ comment }) {
         className="reaction-button"
         onClick={() =>
           dispatch(
+            postActions.reactionAdded({
+              commentId: comment._id,
+              reaction: key,
+            })
+          ) &&
+          dispatch(
             friendAction.reactionAdded({
               commentId: comment._id,
               reaction: key,
@@ -31,7 +38,7 @@ export default function Reactions({ comment }) {
           )
         }
       >
-        {value} {0}
+        {value} {comment.reactions[key]}
       </button>
     );
   });
