@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Profile.css';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import LeftBar from '../components/LeftBar';
 import RightBar from '../components/RightBar';
 import UserFeed from '../components/UserFeed';
@@ -22,6 +22,7 @@ const Profile = () => {
   const authUser = useSelector(authorizedUser);
   const token = useSelector(userToken);
   const appError = useSelector(authError);
+  const navigate = useNavigate();
   const { loading, error, sendRequest, clearError } = useHttp();
   const { status } = useSelector(state => state.auth);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -81,7 +82,7 @@ const Profile = () => {
 
   const handlePhotoModal = () => {
     setShowModal(false);
-    window.location.reload();
+    navigate(-2);
   };
 
   if (status === 'pending') {

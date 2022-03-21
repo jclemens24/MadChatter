@@ -92,12 +92,6 @@ const Messenger = () => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   setMessages(prevMessages => {
-  //     return [...prevMessages, arrivalMessage];
-  //   });
-  // }, [arrivalMessage]);
-
   useEffect(() => {
     const getConversations = async () => {
       const res = await sendRequest(
