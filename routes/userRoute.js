@@ -23,7 +23,7 @@ router
   )
   .patch(
     upload.single('image'),
-    userController.resizeUserPhoto,
+    userController.resizeUserCoverPhoto,
     userController.uploadCoverPhoto
   );
 

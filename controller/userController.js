@@ -186,6 +186,20 @@ exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   next();
 });
 
+exports.resizeUserCoverPhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+  const filename = `user-${uuid()}.jpeg`;
+  req.file.filename = filename;
+
+  await sharp(req.file.buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/images/${filename}`);
+
+  next();
+});
+
 exports.uploadUserPhoto = catchAsync(async (req, res, next) => {
   const image = req.file.filename;
 
@@ -212,7 +226,10 @@ exports.uploadCoverPhoto = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
-      coverPic: image
+      coverPic: image,
+      $push: {
+        photos: image
+      }
     },
     { new: true }
   );
