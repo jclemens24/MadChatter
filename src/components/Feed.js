@@ -8,7 +8,6 @@ import Comments from './Comments';
 import { deleteAPost } from '../slices/postSlice';
 import InputEmojiWithRef from 'react-input-emoji';
 import { likeAPost, dislikeAPost, commentOnAPost } from '../slices/postThunks';
-import { postActions } from '../slices/postSlice';
 import './Posts.css';
 
 export default function Feed(props) {
@@ -25,10 +24,6 @@ export default function Feed(props) {
   useEffect(() => {
     if (props.post.likes.some(p => p === authUser._id)) setIsLiked(true);
   }, [authUser._id, props.post.likes]);
-
-  const clearError = () => {
-    dispatch(postActions.acknowledgeError());
-  };
 
   const likeHandler = async () => {
     await dispatch(likeAPost({ token, postId: props.post._id }))
