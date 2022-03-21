@@ -34,11 +34,17 @@ exports.signup = catchAsync(async (req, res, next) => {
     birthYear: req.body.birthYear
   });
 
+  const posts = await Post.find({ toUser: newUser._id });
+
   const token = signToken(newUser._id);
   newUser.password = undefined;
-  req.user = newUser;
-  req.token = token;
-  next();
+
+  res.status(200).json({
+    status: 'success',
+    user: newUser,
+    posts,
+    token
+  });
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -67,7 +73,7 @@ exports.login = catchAsync(async (req, res, next) => {
       )
     );
   }
-  const posts = await Post.find({ userId: user._id }).populate({
+  const posts = await Post.find({ toUser: user._id }).populate({
     path: 'comments'
   });
 

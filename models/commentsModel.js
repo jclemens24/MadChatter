@@ -20,14 +20,38 @@ const commentSchema = new mongoose.Schema(
       trim: true
     },
     reactions: {
-      thumbsUp: Number,
-      heart: Number,
-      rocket: Number,
-      eyes: Number,
-      lol: Number,
-      hooray: Number,
-      angryFace: Number,
-      sadFace: Number
+      thumbsUp: {
+        type: Number,
+        default: 0
+      },
+      heart: {
+        type: Number,
+        default: 0
+      },
+      rocket: {
+        type: Number,
+        default: 0
+      },
+      eyes: {
+        type: Number,
+        default: 0
+      },
+      lol: {
+        type: Number,
+        default: 0
+      },
+      hooray: {
+        type: Number,
+        default: 0
+      },
+      angryFace: {
+        type: Number,
+        default: 0
+      },
+      sadFace: {
+        type: Number,
+        default: 0
+      }
     }
   },
   {
