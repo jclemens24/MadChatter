@@ -48,7 +48,7 @@ const io = new Server(httpServer, {
   }
 });
 // Server Port
-const port = 8000 || process.env.PORT;
+const port = process.env.PORT || 8000;
 app.options('*', cors());
 app.use(cors());
 app.use(express.json());
