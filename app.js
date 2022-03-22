@@ -36,20 +36,18 @@ mongoose
 
 // Initialize App
 const app = express();
+app.enable('trust proxy');
+app.options('*', cors());
+app.use(cors());
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: [
       'https://mad-chatter-app.web.app',
       'https://mad-chatter-app.firebaseapp.com'
-    ],
-    allowedHeaders: ['Authorization'],
-    credentials: true
+    ]
   }
 });
-app.enable('trust proxy');
-app.options('*', cors());
-app.use(cors());
 // Server Port
 const port = 8000 || process.env.PORT;
 app.use(mongoSanitize());
