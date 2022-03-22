@@ -60,7 +60,6 @@ const Messenger = () => {
     });
 
     socket.current.on('private message', data => {
-      console.log(data);
       setArrivalMessage({
         sender: data.from,
         text: data.content,
