@@ -37,23 +37,7 @@ mongoose
 // Initialize App
 const app = express();
 app.enable('trust proxy');
-app.options(
-  '*',
-  cors({
-    origin: [
-      'https://mad-chatter-app.web.app',
-      'https://mad-chatter-app.firebaseapp.com'
-    ]
-  })
-);
-app.use(
-  cors({
-    origin: [
-      'https://mad-chatter-app.web.app',
-      'https://mad-chatter-app.firebaseapp.com'
-    ]
-  })
-);
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -65,9 +49,9 @@ const io = new Server(httpServer, {
 });
 // Server Port
 const port = 8000 || process.env.PORT;
-app.use(mongoSanitize());
+app.options('*', cors());
+app.use(cors());
 app.use(express.json());
-app.use(compression());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join('public', 'images')));
 
@@ -75,6 +59,8 @@ app.use(express.static(path.join('public', 'images')));
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+app.use(mongoSanitize());
+app.use(compression());
 // Routes
 app.use('/api/users', userRouter);
 app.use('/api/posts', postRouter);
