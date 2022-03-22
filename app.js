@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const path = require('path');
+const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
 const userRouter = require('./routes/userRoute');
 const postRouter = require('./routes/postRoute');
@@ -43,12 +44,12 @@ const io = new Server(httpServer, {
     credentials: true
   }
 });
-
+app.enable('trust proxy');
 app.options('*', cors());
 app.use(cors());
 // Server Port
 const port = 8000 || process.env.PORT;
-
+app.use(mongoSanitize());
 app.use(express.json());
 app.use(compression());
 app.use(express.urlencoded({ extended: true }));
