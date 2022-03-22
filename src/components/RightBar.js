@@ -38,7 +38,9 @@ const RightBar = props => {
           </div>
           <div className="rightbar__info--item">
             <span className="rightbar__info--key">City:</span>
-            <span className="rightbar__info--value">Wilmington</span>
+            <span className="rightbar__info--value">
+              {props.user.location.city}, {props.user.location.state}
+            </span>
           </div>
           <div className="rightbar__info--item">
             <span className="rightbar__info--key">From:</span>
