@@ -37,8 +37,23 @@ mongoose
 // Initialize App
 const app = express();
 app.enable('trust proxy');
-app.options('*', cors());
-app.use(cors());
+app.options(
+  '*',
+  cors({
+    origin: [
+      'https://mad-chatter-app.web.app',
+      'https://mad-chatter-app.firebaseapp.com'
+    ]
+  })
+);
+app.use(
+  cors({
+    origin: [
+      'https://mad-chatter-app.web.app',
+      'https://mad-chatter-app.firebaseapp.com'
+    ]
+  })
+);
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
