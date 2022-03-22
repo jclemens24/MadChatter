@@ -18,7 +18,7 @@ export default function PhotoItem(props) {
 
   const handleProfilePictureSubmit = async () => {
     await sendRequest(
-      `http://localhost:8000/api/users/${userId}/photos`,
+      `${process.env.REACT_APP_BACKEND_URL}/users/${userId}/photos`,
       'PUT',
       { Authorization: `Bearer ${token}` },
       { photo: props.photo }
@@ -29,7 +29,7 @@ export default function PhotoItem(props) {
 
   const handleCoverPictureSubmit = async () => {
     await sendRequest(
-      `http://localhost:8000/api/users/photos/${props.photo}`,
+      `${process.env.REACT_APP_BACKEND_URL}/users/photos/${props.photo}`,
       'PUT',
       { Authorization: `Bearer ${token}` }
     );
@@ -39,7 +39,7 @@ export default function PhotoItem(props) {
 
   const handlePictureDelete = async () => {
     await sendRequest(
-      `http://localhost:8000/api/users/photos/${props.photo}`,
+      `${process.env.REACT_APP_BACKEND_URL}/users/photos/${props.photo}`,
       'PATCH',
       { Authorization: `Bearer ${token}` }
     );
@@ -63,11 +63,7 @@ export default function PhotoItem(props) {
         <div className="photo-image">
           <img
             className="images"
-            src={
-              props.photo.startsWith('https')
-                ? `${props.photo}`
-                : `http://localhost:8000/${props.photo}`
-            }
+            src={`${process.env.REACT_APP_ASSETS}/${props.photo}`}
             alt=""
           />
         </div>

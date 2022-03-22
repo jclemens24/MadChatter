@@ -85,7 +85,7 @@ export default function Feed(props) {
               {props.post.fromUser.profilePic && (
                 <img
                   className="postProfileImg"
-                  src={`http://localhost:8000/${props.post.fromUser.profilePic}`}
+                  src={`${process.env.REACT_APP_ASSETS}/${props.post.fromUser.profilePic}`}
                   alt={`${props.post.fromUser.firstName}`}
                 />
               )}
@@ -113,7 +113,7 @@ export default function Feed(props) {
           {props.post.image && (
             <img
               className="postImg"
-              src={`http://localhost:8000/${props.post.image}`}
+              src={`${process.env.REACT_APP_ASSETS}/${props.post.image}`}
               alt=""
             />
           )}

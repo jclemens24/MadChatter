@@ -16,9 +16,13 @@ const TimelineFeed = () => {
 
   useEffect(() => {
     const fetchAllPosts = async () => {
-      const res = await sendRequest(`http://localhost:8000/api/posts`, 'GET', {
-        Authorization: `Bearer ${token}`,
-      });
+      const res = await sendRequest(
+        `${process.env.REACT_APP_BACKEND_URL}/posts`,
+        'GET',
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
       setAllPosts(
         res.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       );

@@ -9,7 +9,7 @@ export const initializeUser = createAsyncThunk(
       const controller = new AbortController();
       const res = await axios({
         method: 'GET',
-        url: 'http://localhost:8000/api/users',
+        url: `${process.env.REACT_APP_BACKEND_URL}/users`,
         signal: controller.signal,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -32,7 +32,7 @@ export const login = createAsyncThunk(
       const res = await axios({
         method: 'POST',
         signal: controller.signal,
-        url: 'http://localhost:8000/api/users/login',
+        url: `${process.env.REACT_APP_BACKEND_URL}/users/login`,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -71,7 +71,7 @@ export const register = createAsyncThunk(
       const res = await axios({
         method: 'POST',
         signal: controller.signal,
-        url: 'http://localhost:8000/api/users/signup',
+        url: `${process.env.REACT_APP_BACKEND_URL}/users/signup`,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -112,7 +112,7 @@ export const addAFriend = createAsyncThunk(
     try {
       const res = await axios({
         method: 'PATCH',
-        url: `http://localhost:8000/api/users/${userId}/friends?follow=1`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/users/${userId}/friends?follow=1`,
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -138,7 +138,7 @@ export const unfollowAFriend = createAsyncThunk(
     try {
       const res = await axios({
         method: 'PATCH',
-        url: `http://localhost:8000/api/users/${userId}/friends?unfollow=1`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/users/${userId}/friends?unfollow=1`,
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',

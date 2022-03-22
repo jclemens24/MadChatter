@@ -70,7 +70,7 @@ const RightBar = props => {
                       src={
                         friend.profilePic.startsWith('https')
                           ? `${friend.profilePic}`
-                          : `http://localhost:8000/${friend.profilePic}`
+                          : `${process.env.REACT_APP_ASSETS}/${friend.profilePic}`
                       }
                       alt={`${friend.firstName}`}
                       className="rightbar__following--img"

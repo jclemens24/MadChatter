@@ -14,7 +14,7 @@ export default function Comments({ comment }) {
           <div className="commentTop">
             <img
               className="commentImg"
-              src={`http://localhost:8000/${comment.user.profilePic}`}
+              src={`${process.env.REACT_APP_ASSETS}/${comment.user.profilePic}`}
               alt=""
             />
             <p className="commentText">{comment.comment}</p>

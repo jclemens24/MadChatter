@@ -21,7 +21,7 @@ export default function Photos() {
   useEffect(() => {
     const fetchPhotos = async () => {
       const res = await sendRequest(
-        `http://localhost:8000/api/users/${userId}/photos`,
+        `${process.env.REACT_APP_BACKEND_URL}/users/${userId}/photos`,
         'GET',
         { Authorization: `Bearer ${token}` }
       );

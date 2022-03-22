@@ -106,7 +106,7 @@ const Post = props => {
               {post.fromUser.profilePic && (
                 <img
                   className="postProfileImg"
-                  src={`http://localhost:8000/${post.fromUser.profilePic}`}
+                  src={`${process.env.REACT_APP_ASSETS}/${post.fromUser.profilePic}`}
                   alt={`${post.fromUser.firstName}`}
                 />
               )}
@@ -134,7 +134,7 @@ const Post = props => {
           {post.image && (
             <img
               className="postImg"
-              src={`http://localhost:8000/${post.image}`}
+              src={`${process.env.REACT_APP_ASSETS}/${post.image}`}
               alt=""
             />
           )}

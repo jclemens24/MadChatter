@@ -48,12 +48,12 @@ const FriendProfile = () => {
             <div className="profile__cover-pic">
               <img
                 className="profile__cover-image"
-                src={`http://localhost:8000/${friendsData.coverPic}`}
+                src={`${process.env.REACT_APP_ASSETS}/${friendsData.coverPic}`}
                 alt={`${friendsData.firstName} profile`}
               />
               <img
                 className="profile__user-image"
-                src={`http://localhost:8000/${friendsData.profilePic}`}
+                src={`${process.env.REACT_APP_ASSETS}/${friendsData.profilePic}`}
                 alt=""
               />
             </div>

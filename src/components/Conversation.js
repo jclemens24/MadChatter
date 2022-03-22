@@ -10,11 +10,7 @@ export default function Conversation(props) {
             <div key={mem._id} className="conversation">
               <img
                 className="conversationImg"
-                src={
-                  mem.profilePic.startsWith('https')
-                    ? `${mem.profilePic}`
-                    : `http://localhost:8000/${mem.profilePic}`
-                }
+                src={`${process.env.REACT_APP_ASSETS}/${mem.profilePic}`}
                 alt={`${mem.firstName} `}
               />
               <span className="conversationName">{mem.firstName}</span>

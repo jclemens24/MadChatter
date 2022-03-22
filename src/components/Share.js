@@ -66,7 +66,7 @@ const Share = props => {
           <div className="shareTop">
             <img
               className="shareProfileImg"
-              src={`http://localhost:8000/${authUser.profilePic}`}
+              src={`${process.env.REACT_APP_ASSETS}/${authUser.profilePic}`}
               alt={`${authUser.firstName}`}
             />
             <InputEmojiWithRef

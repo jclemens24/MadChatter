@@ -57,7 +57,7 @@ const Profile = () => {
     const formData = new FormData();
     formData.append('image', file);
     const res = await sendRequest(
-      `http://localhost:8000/api/users/${authUser._id}/photos`,
+      `${process.env.REACT_APP_BACKEND_URL}/users/${authUser._id}/photos`,
       'POST',
       { Authorization: `Bearer ${token}` },
       formData
@@ -72,7 +72,7 @@ const Profile = () => {
     const formData = new FormData();
     formData.append('image', coverPhotoFile);
     const res = await sendRequest(
-      `http://localhost:8000/api/users/${authUser._id}/photos`,
+      `${process.env.REACT_APP_BACKEND_URL}/users/${authUser._id}/photos`,
       'PATCH',
       { Authorization: `Bearer ${token}` },
       formData
@@ -124,7 +124,7 @@ const Profile = () => {
                 {!coverPhotoFile && (
                   <img
                     className="profile__cover-image"
-                    src={`http://localhost:8000/${authUser.coverPic}`}
+                    src={`${process.env.REACT_APP_ASSETS}/${authUser.coverPic}`}
                     alt={`${authUser.firstName} profile`}
                   />
                 )}
@@ -170,7 +170,7 @@ const Profile = () => {
                 {!file && (
                   <img
                     className="profile__user-image"
-                    src={`http://localhost:8000/${authUser.profilePic}`}
+                    src={`${process.env.REACT_APP_ASSETS}/${authUser.profilePic}`}
                     alt=""
                   />
                 )}

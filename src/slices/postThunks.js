@@ -7,7 +7,7 @@ export const makeAPost = createAsyncThunk(
     try {
       const res = await axios({
         method: 'POST',
-        url: 'http://localhost:8000/api/posts',
+        url: `${process.env.REACT_APP_BACKEND_URL}/posts`,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -32,7 +32,7 @@ export const likeAPost = createAsyncThunk(
       const controller = new AbortController();
       const res = await axios({
         method: 'PUT',
-        url: `http://localhost:8000/api/posts/${postId}/like`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/like`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -59,7 +59,7 @@ export const dislikeAPost = createAsyncThunk(
       const controller = new AbortController();
       const res = await axios({
         method: 'PUT',
-        url: `http://localhost:8000/api/posts/${postId}/dislike`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/dislike`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -86,7 +86,7 @@ export const commentOnAPost = createAsyncThunk(
       const controller = new AbortController();
       const res = await axios({
         method: 'POST',
-        url: `http://localhost:8000/api/posts/${postId}/comments`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/comments`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -116,7 +116,7 @@ export const getPostComments = createAsyncThunk(
       const controller = new AbortController();
       const res = await axios({
         method: 'GET',
-        url: `http://localhost:8000/api/posts/${postId}/comments`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/comments`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -143,7 +143,7 @@ export const getTimelineFeedPosts = createAsyncThunk(
       const controller = new AbortController();
       const res = await axios({
         method: 'GET',
-        url: `http://localhost:8000/api/posts`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/posts`,
         headers: {
           Authorization: `Bearer ${token}`,
         },

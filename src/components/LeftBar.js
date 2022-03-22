@@ -29,7 +29,7 @@ const LeftBar = ({ user }) => {
   useEffect(() => {
     const getNearbyFriends = async () => {
       const res = await sendRequest(
-        `http://localhost:8000/api/users/${user.location.coordinates[0]},${user.location.coordinates[1]}`,
+        `${process.env.REACT_APP_BACKEND_URL}/users/${user.location.coordinates[0]},${user.location.coordinates[1]}`,
         'GET',
         { Authorization: `Bearer ${token}` }
       );

@@ -17,11 +17,7 @@ const UsersNearby = props => {
     <li className="friendsNearbyList">
       <img
         className="friendsNearbyImg"
-        src={
-          props.user.profilePic.startsWith('https')
-            ? `${props.user.profilePic}`
-            : `http://localhost:8000/${props.user.profilePic}`
-        }
+        src={`${process.env.REACT_APP_ASSETS}/${props.user.profilePic}`}
         alt=""
       />
       <h4>

@@ -43,7 +43,7 @@ const Messenger = () => {
   }, []);
 
   useEffect(() => {
-    socket.current = io('http://localhost:8000', {
+    socket.current = io(`${process.env.REACT_APP_BACKEND_URL}`, {
       withCredentials: true,
       extraHeaders: {
         Authorization: `Bearer ${token}`,
@@ -95,7 +95,7 @@ const Messenger = () => {
   useEffect(() => {
     const getConversations = async () => {
       const res = await sendRequest(
-        `http://localhost:8000/api/conversations`,
+        `${process.env.REACT_APP_BACKEND_URL}/conversations`,
         'GET',
         {
           Authorization: `Bearer ${token}`,
@@ -108,7 +108,7 @@ const Messenger = () => {
 
   const getCurrentChatroom = async id => {
     const res = await axios({
-      url: `http://localhost:8000/api/messages/${id}`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/messages/${id}`,
       method: 'GET',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -136,7 +136,7 @@ const Messenger = () => {
     });
 
     const res = await sendRequest(
-      `http://localhost:8000/api/messages`,
+      `${process.env.REACT_APP_BACKEND_URL}/messages`,
       'POST',
       {
         'Content-Type': 'application/json',

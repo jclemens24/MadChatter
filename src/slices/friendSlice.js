@@ -12,7 +12,7 @@ export const getFriendsProfileData = createAsyncThunk(
       const controller = new AbortController();
       const res = await axios({
         method: 'GET',
-        url: `http://localhost:8000/api/users/${userId}/profile/friends`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/users/${userId}/profile/friends`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -39,7 +39,7 @@ export const likeAFriendsPost = createAsyncThunk(
       const controller = new AbortController();
       const res = await axios({
         method: 'PUT',
-        url: `http://localhost:8000/api/posts/${postId}/like`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/like`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -66,7 +66,7 @@ export const dislikeAFriendsPost = createAsyncThunk(
       const controller = new AbortController();
       const res = await axios({
         method: 'PUT',
-        url: `http://localhost:8000/api/posts/${postId}/dislike`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/dislike`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -93,7 +93,7 @@ export const commentOnAFriendsPost = createAsyncThunk(
       const controller = new AbortController();
       const res = await axios({
         method: 'POST',
-        url: `http://localhost:8000/api/posts/${postId}/comments`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/comments`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -122,7 +122,7 @@ export const makeAPostOnFriendsWall = createAsyncThunk(
     try {
       const res = await axios({
         method: 'POST',
-        url: 'http://localhost:8000/api/posts',
+        url: `${process.env.REACT_APP_BACKEND_URL}/posts`,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,

@@ -7,7 +7,7 @@ const Online = props => {
       <div className="rightbarProfileImgContainer">
         <img
           className="rightbarProfileImg"
-          src={`http://localhost:8000/${props.user.profilePic}`}
+          src={`${process.env.REACT_APP_ASSETS}/${props.user.profilePic}`}
           alt=""
         />
         <span className="rightbarOnline"></span>
