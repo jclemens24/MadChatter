@@ -43,7 +43,7 @@ const Messenger = () => {
   }, []);
 
   useEffect(() => {
-    socket.current = io(`${process.env.REACT_APP_BACKEND_URL}`, {
+    socket.current = io(`${process.env.REACT_APP_ASSETS}`, {
       auth: {
         _id: _id,
         userId: _id,
