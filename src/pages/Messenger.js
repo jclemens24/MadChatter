@@ -44,10 +44,6 @@ const Messenger = () => {
 
   useEffect(() => {
     socket.current = io(`${process.env.REACT_APP_BACKEND_URL}`, {
-      withCredentials: true,
-      extraHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
       auth: {
         _id: _id,
         userId: _id,
