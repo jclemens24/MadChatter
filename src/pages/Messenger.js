@@ -43,7 +43,7 @@ const Messenger = () => {
   }, []);
 
   useEffect(() => {
-    socket.current = io(`${process.env.REACT_APP_ASSETS}`, {
+    socket.current = io(`https://mad-chatter-backend.herokuapp.com`, {
       auth: {
         _id: _id,
         userId: _id,
