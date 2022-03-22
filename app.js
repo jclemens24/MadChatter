@@ -149,7 +149,7 @@ io.on('connection', async socket => {
 });
 
 // Server Listening
-httpServer.listen(port, 'localhost', () => {
+httpServer.listen(port, () => {
   console.log(`listening on server port ${port}`);
 });
 
