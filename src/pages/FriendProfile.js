@@ -10,7 +10,7 @@ import ErrorModal from '../UI/ErrorModal';
 import { friendAction, getFriendsProfileData } from '../slices/friendSlice';
 import { userToken } from '../slices/authSlice';
 
-const FriendProfile = props => {
+const FriendProfile = () => {
   const status = useSelector(state => state.friend.status);
   const error = useSelector(state => state.friend.error);
   const errorMessage = useSelector(state => state.friend.errorMessage);
@@ -19,11 +19,8 @@ const FriendProfile = props => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getFriendsProfileData({ token, userId }))
-      .unwrap()
-      .then(data => {
-        console.log(data);
-      });
+    dispatch(getFriendsProfileData({ token, userId })).unwrap();
+
     return () => {
       dispatch(friendAction.clearFriendsProfileData());
     };
