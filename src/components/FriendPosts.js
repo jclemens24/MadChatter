@@ -147,7 +147,7 @@ const FriendPosts = props => {
           </div>
           <div className="postBottomRight">
             <span onClick={handleCommentClick} className="postCommentText">
-              {post.comments?.length === 0
+              {typeof post.comments === 'undefined'
                 ? '0 comments'
                 : `${post.comments.length} comments`}
             </span>
