@@ -84,7 +84,11 @@ const Post = props => {
         postId,
         comment: text,
       })
-    );
+    )
+      .unwrap()
+      .then(() => {
+        setText('');
+      });
   };
 
   if (error) {
