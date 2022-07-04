@@ -120,13 +120,13 @@ io.on('connection', async socket => {
 
   socket.emit('users', users);
 
-  socket.broadcast.emit('user connected', {
+  socket.broadcast.emit('userConnected', {
     userId: socket.userId,
     connected: true
   });
 
-  socket.on('private message', ({ content, to, from }) => {
-    socket.to(to._id).to(socket.userId).emit('private message', {
+  socket.on('privateMessage', ({ content, to, from }) => {
+    socket.to(to._id).to(socket.userId).emit('privateMessage', {
       content,
       to,
       from
