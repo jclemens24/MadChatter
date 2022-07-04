@@ -59,7 +59,7 @@ const Messenger = () => {
       socket.current.userId = userId;
     });
 
-    socket.current.on('private message', data => {
+    socket.current.on('privateMessage', data => {
       setArrivalMessage({
         sender: data.from,
         text: data.content,
@@ -124,7 +124,7 @@ const Messenger = () => {
       conversationId: currentChat._id,
     };
 
-    socket.current.emit('private message', {
+    socket.current.emit('privateMessage', {
       to: reciever,
       content: newMessage,
       from: authUser,
@@ -221,7 +221,7 @@ const Messenger = () => {
         <div className="chatOnline">
           <div className="chatOnlineWrapper">
             <ChatOnline
-              onlineUsers={onlineUsers}
+              onlineUsers={onlineUsers.length}
               user={authUser}
               setCurrentChat={setCurrentChat}
             />

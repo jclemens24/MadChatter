@@ -24,7 +24,7 @@ export default function ChatOnline(props) {
     try {
       const res = await axios({
         method: 'GET',
-        url: `${process.env.REACT_APP_BACKEND_URL}/${friend._id}`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/conversations/${friend._id}`,
         headers: {
           Authorization: `Bearer ${token}`,
         },

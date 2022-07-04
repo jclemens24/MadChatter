@@ -102,7 +102,7 @@ const RightBar = props => {
         <h4 className="rightbar__title">Online Friends</h4>
         <ul className="rightbar__friendlist">
           {props.user.following &&
-            props.user.following?.map(person => (
+            props.user.following.map(person => (
               <Online key={person._id} user={person} />
             ))}
         </ul>

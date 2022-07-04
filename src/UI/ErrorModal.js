@@ -9,6 +9,7 @@ const ErrorModal = props => {
       header="An Error Occurred!"
       show={!!props.error}
       footer={<button onClick={props.onClear}>Okay</button>}
+      style={{ textAlign: 'center' }}
     >
       <p>{props.error}</p>
     </Modal>
