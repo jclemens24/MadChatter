@@ -157,7 +157,7 @@ const Post = props => {
           </div>
           <div className="postBottomRight">
             <span onClick={handleCommentClick} className="postCommentText">
-              {post.comments.length && `${post.comments.length} comments`}
+              {`${post.comments.length} comments`}
             </span>
           </div>
         </div>
