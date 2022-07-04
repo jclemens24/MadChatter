@@ -158,7 +158,6 @@ const Post = props => {
           <div className="postBottomRight">
             <span onClick={handleCommentClick} className="postCommentText">
               {post.comments.length && `${post.comments.length} comments`}
-              {!post.comments.length && `0 comments`}
             </span>
           </div>
         </div>
@@ -166,7 +165,7 @@ const Post = props => {
       {showCommentDropdown && (
         <div style={{ display: 'block' }} className="dropdown-comment">
           <ul className="comments">
-            {post.comments.length ? (
+            {post.comments && post.comments.length ? (
               post.comments.map(comment => (
                 <Comments comment={comment} key={comment.id} />
               ))

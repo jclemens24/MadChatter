@@ -49,6 +49,7 @@ const postSlice = createSlice({
     [makeAPost.fulfilled]: (state, action) => {
       state.status = 'success';
       const { post } = action.payload;
+      post.comments = [];
       state.posts.push(post);
       state.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       return state;
