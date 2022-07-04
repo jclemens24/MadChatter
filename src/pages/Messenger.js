@@ -27,20 +27,9 @@ const Messenger = () => {
   const scrollRef = useRef();
   const { _id, firstName } = authUser;
 
-  const handleCurrentChat = chat => {
-    setCurrentChat(chat);
-  };
-
   useEffect(() => {
-    localStorage.setItem('currentChat', JSON.stringify(currentChat));
-  }, [currentChat]);
-
-  useEffect(() => {
-    const storedCurrentChat = JSON.parse(localStorage.getItem('currentChat'));
-    if (storedCurrentChat) {
-      handleCurrentChat(storedCurrentChat);
-    }
-  }, []);
+    setOnlineUsers(authUser.following);
+  }, [authUser.following]);
 
   useEffect(() => {
     socket.current = io(`https://mad-chatter-backend.herokuapp.com`, {
@@ -221,7 +210,7 @@ const Messenger = () => {
         <div className="chatOnline">
           <div className="chatOnlineWrapper">
             <ChatOnline
-              onlineUsers={onlineUsers.length}
+              onlineUsers={onlineUsers}
               user={authUser}
               setCurrentChat={setCurrentChat}
             />
