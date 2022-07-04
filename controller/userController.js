@@ -174,12 +174,12 @@ exports.setUserCoverPhoto = catchAsync(async (req, res, next) => {
 
 exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
-  const filename = `user-${uuid()}.jpeg`;
+  const filename = `user-${uuid()}.jpg`;
   req.file.filename = filename;
 
   await sharp(req.file.buffer)
     .resize(500, 500)
-    .toFormat('jpeg')
+    .toFormat('jpg')
     .jpeg({ quality: 90 })
     .toFile(`public/images/${req.file.filename}`);
 
@@ -188,12 +188,12 @@ exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
 
 exports.resizeUserCoverPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
-  const filename = `user-${uuid()}.jpeg`;
+  const filename = `user-${uuid()}.jpg`;
   req.file.filename = filename;
 
   await sharp(req.file.buffer)
     .resize(2000, 1333)
-    .toFormat('jpeg')
+    .toFormat('jpg')
     .jpeg({ quality: 90 })
     .toFile(`public/images/${filename}`);
 
