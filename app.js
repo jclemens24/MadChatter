@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const path = require('path');
 const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
+const aws = require('aws-sdk');
 const userRouter = require('./routes/userRoute');
 const postRouter = require('./routes/postRoute');
 const conversationRouter = require('./routes/conversationRoute');
@@ -19,6 +20,9 @@ const { InMemorySessionStore } = require('./store/sessionStore');
 
 const sessionStore = new InMemorySessionStore();
 dotenv.config({ path: './config.env' });
+aws.config.region = 'us-east-1';
+
+const S3_BUCKET = process.env.S3_BUCKET_NAME;
 
 // Database Connection
 const DB = process.env.DATABASE.replace(
@@ -67,6 +71,31 @@ app.use('/api/posts', postRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/conversations', conversationRouter);
 app.use('/api/messages', messageRouter);
+app.get('/sign-s3', (req, res) => {
+  const s3 = new aws.S3();
+  const filename = req.query['file-name'];
+  const fileType = req.query['file-type'];
+  const s3Params = {
+    Bucket: S3_BUCKET,
+    Key: filename,
+    Expires: 60,
+    contentType: fileType,
+    ACL: 'public-read'
+  };
+
+  s3.getSignedUrl('putObject', s3Params, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.end();
+    }
+    const returnData = {
+      signedRequest: data,
+      url: `https://${S3_BUCKET}.s3.amazonaws.com/${filename}`
+    };
+    res.write(JSON.stringify(returnData));
+    res.end();
+  });
+});
 // Error Middleware
 app.use(errorController);
 app.all('*', (req, res, next) => {
