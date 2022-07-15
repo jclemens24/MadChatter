@@ -21,7 +21,7 @@ const { InMemorySessionStore } = require('./store/sessionStore');
 
 const sessionStore = new InMemorySessionStore();
 dotenv.config({ path: './config.env' });
-aws.config.region = 'us-east-1';
+aws.config.update({ region: 'us-east-1' });
 
 const S3_BUCKET = process.env.S3_BUCKET_NAME;
 
@@ -72,12 +72,19 @@ app.use('/api/posts', postRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/conversations', conversationRouter);
 app.use('/api/messages', messageRouter);
-app.get('/sign-s3', (req, res) => {
-  const s3 = new aws.S3();
+app.get('/sign-s3', async (req, res) => {
+  const s3 = new aws.S3({
+    region: 'us-east-1',
+    apiVersion: '2006-03-01',
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
+  });
   const filename = req.query['file-name'];
   const fileType = req.query['file-type'];
   const s3Params = {
-    Bucket: S3_BUCKET,
+    Bucket: S3_BUCKET || 'madchatter-images',
     Key: filename,
     Expires: 60,
     contentType: fileType,
