@@ -86,10 +86,22 @@ app.get('/sign-s3', async (req, res) => {
   const s3Params = {
     Bucket: S3_BUCKET || 'madchatter-images',
     Key: filename,
-    Expires: 60,
+    Expires: 900,
     contentType: fileType,
     ACL: 'public-read'
   };
+
+  s3.getSignedUrlPromise('putObject', s3Params).then(data => {
+    const returnData = {
+      signedRequest: data,
+      url: `https://madchatter-images.s3.amazonaws.com/${filename}`
+    };
+    res.json({
+      url: returnData
+    });
+    res.write(returnData);
+    res.end();
+  });
 
   s3.getSignedUrl('putObject', s3Params, (err, data) => {
     if (err) {
