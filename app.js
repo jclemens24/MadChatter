@@ -91,22 +91,11 @@ app.get('/sign-s3', async (req, res) => {
     ACL: 'public-read'
   };
 
-  s3.getSignedUrlPromise('putObject', s3Params).then(data => {
-    const returnData = {
-      signedRequest: data,
-      url: `https://madchatter-images.s3.amazonaws.com/${filename}`
-    };
-    res.json({
-      url: returnData
-    });
-    res.write(returnData);
-    res.end();
-  });
-
-  s3.getSignedUrl('putObject', s3Params, (err, data) => {
+  // eslint-disable-next-line prefer-arrow-callback
+  s3.getSignedUrl('putObject', s3Params, function (err, data) {
     if (err) {
       console.error(err);
-      return res.end();
+      return res.end('Error');
     }
     const returnData = {
       signedRequest: data,
