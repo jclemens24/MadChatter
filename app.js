@@ -9,6 +9,7 @@ const path = require('path');
 const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
 const aws = require('aws-sdk');
+const User = require('./models/userModel');
 const userRouter = require('./routes/userRoute');
 const postRouter = require('./routes/postRoute');
 const conversationRouter = require('./routes/conversationRoute');
@@ -83,7 +84,7 @@ app.get('/sign-s3', (req, res) => {
     ACL: 'public-read'
   };
 
-  s3.getSignedUrl('putObject', s3Params, (err, data) => {
+  s3.getSignedUrl('putObject', s3Params, async (err, data) => {
     if (err) {
       console.error(err);
       return res.end();
@@ -92,7 +93,14 @@ app.get('/sign-s3', (req, res) => {
       signedRequest: data,
       url: `https://${S3_BUCKET}.s3.amazonaws.com/${filename}`
     };
-    res.write(JSON.stringify(returnData));
+    await User.findByIdAndUpdate(
+      req.user._id,
+      { profilePic: returnData.url },
+      { new: true }
+    );
+    res.json({
+      url: returnData.url
+    });
     res.end();
   });
 });
