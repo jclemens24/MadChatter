@@ -16,16 +16,8 @@ router
   .route('/:userId/photos')
   .get(userController.getUserPhotos)
   .put(userController.setUserPhoto)
-  .post(
-    upload.single('image'),
-    userController.resizeUserPhoto,
-    userController.uploadUserPhoto
-  )
-  .patch(
-    upload.single('image'),
-    userController.resizeUserCoverPhoto,
-    userController.uploadCoverPhoto
-  );
+  .post(upload.single('image'), userController.uploadUserPhoto)
+  .patch(upload.single('image'), userController.uploadCoverPhoto);
 
 router
   .route('/photos/:pid')

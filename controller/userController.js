@@ -1,5 +1,3 @@
-const sharp = require('sharp');
-const uuid = require('uuid').v4;
 const fs = require('fs');
 const User = require('../models/userModel');
 const Post = require('../models/postModel');
@@ -172,36 +170,8 @@ exports.setUserCoverPhoto = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
-  if (!req.file) return next();
-  const filename = `user-${uuid()}.jpg`;
-  req.file.filename = filename;
-
-  await sharp(req.file.buffer)
-    .resize(500, 500)
-    .toFormat('jpg')
-    .jpeg({ quality: 90 })
-    .toFile(`public/images/${req.file.filename}`);
-
-  next();
-});
-
-exports.resizeUserCoverPhoto = catchAsync(async (req, res, next) => {
-  if (!req.file) return next();
-  const filename = `user-${uuid()}.jpg`;
-  req.file.filename = filename;
-
-  await sharp(req.file.buffer)
-    .resize(2000, 1333)
-    .toFormat('jpg')
-    .jpeg({ quality: 90 })
-    .toFile(`public/images/${filename}`);
-
-  next();
-});
-
 exports.uploadUserPhoto = catchAsync(async (req, res, next) => {
-  const image = req.file.filename;
+  const image = `${req.file.location}`;
 
   const user = await User.findByIdAndUpdate(
     req.user._id,
@@ -221,7 +191,7 @@ exports.uploadUserPhoto = catchAsync(async (req, res, next) => {
 });
 
 exports.uploadCoverPhoto = catchAsync(async (req, res, next) => {
-  const image = req.file.filename;
+  const image = `${req.file.location}`;
 
   const user = await User.findByIdAndUpdate(
     req.user._id,
