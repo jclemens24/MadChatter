@@ -15,7 +15,6 @@ const s3 = new S3Client({
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    acl: 'public-read',
     bucket: 'madchatter-images',
     cacheControl: 'max-age=31536000',
     contentType: multerS3.AUTO_CONTENT_TYPE,
