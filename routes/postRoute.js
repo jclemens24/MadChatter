@@ -15,11 +15,7 @@ router.put('/:postId/dislike', postController.dislikeAPost);
 router
   .route('/')
   .get(postController.getAllPosts)
-  .post(
-    upload.single('image'),
-    postController.resizePostPhoto,
-    postController.createANewPost
-  );
+  .post(upload.single('image'), postController.createANewPost);
 
 router
   .route('/:postId')

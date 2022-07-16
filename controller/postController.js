@@ -1,5 +1,3 @@
-const sharp = require('sharp');
-const uuid = require('uuid').v4;
 const Post = require('../models/postModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
@@ -45,25 +43,10 @@ exports.getOnePost = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.resizePostPhoto = catchAsync(async (req, res, next) => {
-  if (!req.file) return next();
-  const filename = `post-${uuid()}.jpeg`;
-  req.file.filename = filename;
-  const inputBuffer = req.file.buffer;
-
-  await sharp(inputBuffer)
-    .resize(500, 500)
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toFile(`public/images/${req.file.filename}`);
-
-  next();
-});
-
 exports.createANewPost = catchAsync(async (req, res, next) => {
   let image;
   if (req.file) {
-    image = req.file.filename;
+    image = `${req.file.location}`;
   } else {
     image = null;
   }
