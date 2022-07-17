@@ -61,11 +61,7 @@ export default function PhotoItem(props) {
       <Card>
         {loading && <LoadingSpinner />}
         <div className="photo-image">
-          <img
-            className="images"
-            src={`${process.env.REACT_APP_ASSETS}/${props.photo}`}
-            alt=""
-          />
+          <img className="images" src={`${props.photo}`} alt="" />
         </div>
         {authUser._id === userId && (
           <div className="photo-actions">

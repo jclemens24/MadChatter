@@ -10,7 +10,7 @@ import { makeAPostOnFriendsWall } from '../slices/friendSlice';
 const Share = props => {
   const token = useSelector(userToken);
   const authUser = useSelector(authorizedUser);
-  const filePicker = useRef();
+  const filePicker = useRef(null);
   const dispatch = useDispatch();
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -36,7 +36,7 @@ const Share = props => {
       });
   };
 
-  const submitHandler = event => {
+  const submitHandler = async event => {
     event.preventDefault();
     const formData = new FormData();
     formData.append('desc', text);
@@ -45,11 +45,11 @@ const Share = props => {
     formData.append('from', authUser._id);
 
     props.user._id === authUser._id
-      ? sendPostRequestOnOwnWall(formData)
-      : sendPostRequestOnFriendsWall(formData);
+      ? await sendPostRequestOnOwnWall(formData)
+      : await sendPostRequestOnFriendsWall(formData);
   };
 
-  const grabImageHandler = event => {
+  const grabPostImage = event => {
     event.preventDefault();
     const chosenFile = event.target.files[0];
     setPreviewUrl(window.URL.createObjectURL(chosenFile));
@@ -66,7 +66,7 @@ const Share = props => {
           <div className="shareTop">
             <img
               className="shareProfileImg"
-              src={`${process.env.REACT_APP_ASSETS}/${authUser.profilePic}`}
+              src={`${authUser.profilePic}`}
               alt={`${authUser.firstName}`}
             />
             <InputEmojiWithRef
@@ -106,7 +106,7 @@ const Share = props => {
                 id="image"
                 name="image"
                 accept="image/*"
-                onChange={grabImageHandler}
+                onChange={grabPostImage}
               />
             </label>
             <div className="shareOption">

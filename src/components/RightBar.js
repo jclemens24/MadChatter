@@ -67,11 +67,7 @@ const RightBar = props => {
                 <div className="rightbar__following">
                   <Link to={`/${friend._id}/friend/profile`}>
                     <img
-                      src={
-                        friend.profilePic.startsWith('https')
-                          ? `${friend.profilePic}`
-                          : `${process.env.REACT_APP_ASSETS}/${friend.profilePic}`
-                      }
+                      src={`${friend.profilePic}`}
                       alt={`${friend.firstName}`}
                       className="rightbar__following--img"
                     />

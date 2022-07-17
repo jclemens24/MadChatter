@@ -17,7 +17,7 @@ const UsersNearby = props => {
     <li className="friendsNearbyList">
       <img
         className="friendsNearbyImg"
-        src={`${process.env.REACT_APP_ASSETS}/${props.user.profilePic}`}
+        src={`${props.user.profilePic}`}
         alt=""
       />
       <h4>

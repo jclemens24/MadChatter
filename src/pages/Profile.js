@@ -56,14 +56,16 @@ const Profile = () => {
     event.preventDefault();
     const formData = new FormData();
     formData.append('image', file);
-    const res = await sendRequest(
+
+    const req = await sendRequest(
       `${process.env.REACT_APP_BACKEND_URL}/users/${authUser._id}/photos`,
       'POST',
       { Authorization: `Bearer ${token}` },
       formData
     );
-    dispatch(authAction.setProfilePic({ photo: res.photo }));
-    dispatch(authAction.updatePhotos(res.photo));
+    dispatch(authAction.setProfilePic({ photo: req.photo }));
+    dispatch(authAction.updatePhotos(req.photo));
+    return;
   };
 
   const submitCoverPhotoHandler = async event => {
@@ -124,7 +126,7 @@ const Profile = () => {
                 {!coverPhotoFile && (
                   <img
                     className="profile__cover-image"
-                    src={`${process.env.REACT_APP_ASSETS}/${authUser.coverPic}`}
+                    src={`${authUser.coverPic}`}
                     alt={`${authUser.firstName} profile`}
                   />
                 )}
@@ -170,7 +172,7 @@ const Profile = () => {
                 {!file && (
                   <img
                     className="profile__user-image"
-                    src={`${process.env.REACT_APP_ASSETS}/${authUser.profilePic}`}
+                    src={`${authUser.profilePic}`}
                     alt=""
                   />
                 )}

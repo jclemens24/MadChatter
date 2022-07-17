@@ -100,7 +100,7 @@ const FriendPosts = props => {
               {post.fromUser.profilePic && (
                 <img
                   className="postProfileImg"
-                  src={`${process.env.REACT_APP_ASSETS}/${post.fromUser.profilePic}`}
+                  src={`${post.fromUser.profilePic}`}
                   alt={`${post.fromUser.firstName}`}
                 />
               )}
@@ -126,11 +126,7 @@ const FriendPosts = props => {
         <div className="postCenter">
           <span className="postText">{post.desc}</span>
           {post.image && (
-            <img
-              className="postImg"
-              src={`${process.env.REACT_APP_ASSETS}/${post.image}`}
-              alt=""
-            />
+            <img className="postImg" src={`${post.image}`} alt="" />
           )}
         </div>
         <div className="postBottom">

@@ -85,7 +85,7 @@ export default function Feed(props) {
               {props.post.fromUser.profilePic && (
                 <img
                   className="postProfileImg"
-                  src={`${process.env.REACT_APP_ASSETS}/${props.post.fromUser.profilePic}`}
+                  src={`${props.post.fromUser.profilePic}`}
                   alt={`${props.post.fromUser.firstName}`}
                 />
               )}
@@ -111,11 +111,7 @@ export default function Feed(props) {
         <div className="postCenter">
           <span className="postText">{props.post?.desc}</span>
           {props.post.image && (
-            <img
-              className="postImg"
-              src={`${process.env.REACT_APP_ASSETS}/${props.post.image}`}
-              alt=""
-            />
+            <img className="postImg" src={`${props.post.image}`} alt="" />
           )}
         </div>
         <div className="postBottom">

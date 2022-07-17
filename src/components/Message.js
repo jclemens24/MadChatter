@@ -7,7 +7,7 @@ export default function Message(props) {
       <div className="messageTop">
         <img
           className="messageImg"
-          src={`${process.env.REACT_APP_ASSETS}/${props.picture.profilePic}`}
+          src={`${props.picture.profilePic}`}
           alt=""
         />
         <p className="messageText">{props.message.text}</p>
