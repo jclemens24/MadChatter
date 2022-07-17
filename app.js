@@ -8,8 +8,6 @@ const morgan = require('morgan');
 const path = require('path');
 const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
-const aws = require('aws-sdk');
-const User = require('./models/userModel');
 const userRouter = require('./routes/userRoute');
 const postRouter = require('./routes/postRoute');
 const conversationRouter = require('./routes/conversationRoute');
@@ -21,9 +19,6 @@ const { InMemorySessionStore } = require('./store/sessionStore');
 
 const sessionStore = new InMemorySessionStore();
 dotenv.config({ path: './config.env' });
-aws.config.update({ region: 'us-east-1' });
-
-const S3_BUCKET = process.env.S3_BUCKET_NAME;
 
 // Database Connection
 const DB = process.env.DATABASE.replace(
@@ -72,50 +67,7 @@ app.use('/api/posts', postRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/conversations', conversationRouter);
 app.use('/api/messages', messageRouter);
-app.get('/sign-s3', async (req, res) => {
-  const s3 = new aws.S3({
-    region: 'us-east-1',
-    apiVersion: '2006-03-01',
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-    }
-  });
-  const filename = req.query['file-name'];
-  const fileType = req.query['file-type'];
-  const s3Params = {
-    Bucket: S3_BUCKET || 'madchatter-images',
-    Key: filename,
-    Expires: 900,
-    contentType: fileType,
-    ACL: 'public-read'
-  };
 
-  // eslint-disable-next-line prefer-arrow-callback
-  s3.getSignedUrl('putObject', s3Params, function (err, data) {
-    if (err) {
-      console.error(err);
-      return res.end('Error');
-    }
-    const returnData = {
-      signedRequest: data,
-      url: `https://${S3_BUCKET}.s3.amazonaws.com/${filename}`
-    };
-    res.write(JSON.stringify(returnData));
-    res.end();
-  });
-});
-app.post('/save-image', async (req, res) => {
-  const user = await User.findByIdAndUpdate(
-    req.user._id,
-    { profilePic: req.body.url },
-    { new: true }
-  );
-
-  res.status(200).json({
-    photo: user.profilePic
-  });
-});
 // Error Middleware
 app.use(errorController);
 app.all('*', (req, res, next) => {
