@@ -13,9 +13,9 @@
 
 .profile__cover-image {
   width: 100%;
-  height: auto;
-  object-fit: cover;
-  object-position: center;
+  height: 300px;
+  object-fit: scale-down;
+  object-position: bottom center;
   cursor: pointer;
   z-index: -1;
 }
