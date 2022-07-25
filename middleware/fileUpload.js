@@ -2,6 +2,7 @@ const multer = require('multer');
 const { S3Client } = require('@aws-sdk/client-s3');
 const uuidv4 = require('uuid').v4;
 const multerS3 = require('multer-s3');
+const sharp = require('sharp');
 const AppError = require('../utils/appError');
 
 const s3 = new S3Client({
@@ -26,6 +27,7 @@ const upload = multer({
     const filetypes = /jpeg|jpg|png/;
     const mimetypes = filetypes.test(file.mimetype);
     if (mimetypes) {
+      sharp(req.file).resize(500, 500, 'cover').toFormat('jpg');
       return callback(null, true);
     }
     return callback(new AppError('You may only upload images', 404), false);
