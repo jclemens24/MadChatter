@@ -7,6 +7,7 @@ import {
   ChatOutlined,
   Logout,
 } from '@mui/icons-material';
+import { Tooltip } from '@mui/material';
 import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../slices/authActions';
@@ -83,7 +84,9 @@ const TopBar = () => {
           </div>
           <div className="topbar__icons">
             <div className="topbar__icon--item">
-              <PersonOutlineOutlined />
+              <Tooltip title="Account" arrow>
+                <PersonOutlineOutlined />
+              </Tooltip>
             </div>
             <div className="topbar__icon--item">
               <ChatOutlined />
