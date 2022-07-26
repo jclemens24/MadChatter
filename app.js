@@ -6,8 +6,10 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const path = require('path');
+const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
+const limiter = require('./utils/rateLimiter');
 const userRouter = require('./routes/userRoute');
 const postRouter = require('./routes/postRoute');
 const conversationRouter = require('./routes/conversationRoute');
@@ -51,9 +53,15 @@ const io = new Server(httpServer, {
 const port = process.env.PORT || 8000;
 app.options('*', cors());
 app.use(cors());
+app.use('/api', limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join('public', 'images')));
+app.use(
+  helmet({
+    hidePoweredBy: true
+  })
+);
 
 // Global Middleware
 if (process.env.NODE_ENV === 'development') {

@@ -27,7 +27,7 @@ const upload = multer({
     const filetypes = /jpeg|jpg|png/;
     const mimetypes = filetypes.test(file.mimetype);
     if (mimetypes) {
-      sharp(file).resize(500, 500, 'cover').toFormat('jpg');
+      sharp(file).resize(500, 500, 'inside').toFormat('jpg');
       return callback(null, true);
     }
     return callback(new AppError('You may only upload images', 404), false);
