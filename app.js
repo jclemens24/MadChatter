@@ -33,7 +33,9 @@ mongoose
     useNewUrlParser: true,
     autoIndex: false
   })
+  // eslint-disable-next-line no-console
   .then(() => console.log('Database Connected Successfully'))
+  // eslint-disable-next-line no-console
   .catch(err => console.log(err));
 
 // Initialize App
@@ -159,6 +161,7 @@ io.on('connection', async socket => {
 
 // Server Listening
 httpServer.listen(port, () => {
+  // eslint-disable-next-line no-console
   console.log(`listening on server port ${port}`);
 });
 
