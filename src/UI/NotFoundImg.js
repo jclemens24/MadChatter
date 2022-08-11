@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './NotFoundImg.css';
+import img from '../assets/page_not_found.png';
 
 const NotFoundImg = () => {
   const isActive = useRef();
@@ -22,12 +23,7 @@ const NotFoundImg = () => {
       <button className="not_found_btn" onClick={handleOnClick} type="button">
         Go Back Home
       </button>
-      {isActive && (
-        <img
-          src="http://localhost:8000/page_not_found.png"
-          alt="resource not found"
-        />
-      )}
+      {isActive && <img src={img} alt="resource not found" />}
     </React.Fragment>
   );
 };
