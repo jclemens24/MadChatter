@@ -68,11 +68,16 @@
   align-items: center;
 }
 
+.rightbar__following:hover {
+  transform: scale(1.1);
+}
+
 .rightbar__following--img {
   width: 150px;
   height: 150px;
   object-fit: cover;
   border-radius: 12px;
+  box-shadow: 0px 0px 24px -8px rgba(0, 0, 0, 0.8);
 }
 
 .rightbar__following .btn__follow {
