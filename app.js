@@ -20,7 +20,7 @@ const AppError = require('./utils/appError');
 const { InMemorySessionStore } = require('./store/sessionStore');
 
 const sessionStore = new InMemorySessionStore();
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: './.env' });
 
 // Database Connection
 const DB = process.env.DATABASE.replace(
