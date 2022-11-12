@@ -74,7 +74,7 @@ const Register = props => {
                 .required('Password is required')
                 .length(8, 'Password must be at least 8 characters'),
               passwordConfirm: Yup.string().oneOf(
-                [Yup.ref('password'), null],
+                [Yup.ref('password')],
                 'Passwords must match'
               ),
               city: Yup.string()
