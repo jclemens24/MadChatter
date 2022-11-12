@@ -55,15 +55,17 @@ exports.login = catchAsync(async (req, res, next) => {
     );
   }
 
-  const user = await User.findOne({
-    email
-  })
-    .select('+password')
-    .populate({
-      path: 'following',
-      select:
-        '-__v -birthYear -catchPhrase -email -following -followers -coverPic -location -photos'
-    });
+  const user = await User.findOne(
+    {
+      email
+    },
+    '+password'
+  )
+  .populate({
+    path: 'following',
+    select:
+      '-__v -birthYear -catchPhrase -email -following -followers -coverPic -location -photos'
+  });
 
   const verifiedPassword = await user.verifyPassword(password, user.password);
 
