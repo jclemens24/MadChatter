@@ -31,9 +31,7 @@ const DB = process.env.DATABASE.replace(
 mongoose
   .connect(DB, {
     useNewUrlParser: true,
-    autoIndex: false,
-    useUnifiedTopology: true,
-    serverApi: '1'
+    useUnifiedTopology: true
   })
   // eslint-disable-next-line no-console
   .then(() => console.log('Database Connected Successfully'))
