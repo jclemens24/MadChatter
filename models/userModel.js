@@ -112,6 +112,7 @@ userSchema.virtual('posts', {
 });
 
 userSchema.index({ location: '2dsphere' });
+userSchema.index({ email: 'text' });
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
@@ -121,10 +122,10 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-userSchema.statics.verifyPassword = async function (candidatePass, userPass) {
-  const result = await bcrypt.compare(candidatePass, userPass);
-  return result;
-};
+// eslint-disable-next-line prefer-arrow-callback
+userSchema.method('verifyPassword', async function (candidatePass, userPass) {
+  return await bcrypt.compare(candidatePass, userPass);
+});
 
 const User = mongoose.model('User', userSchema);
 
