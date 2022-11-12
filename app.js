@@ -57,18 +57,21 @@ const allowed = [
   'https://mad-chatter-app.web.app/',
   'https://mad-chatter-app.firebaseapp.com/'
 ];
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (allowed.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new AppError('Not allowed by CORS', 503));
-    }
+
+const corsDelegated = function (req, callback) {
+  let corsOptions;
+
+  if (allowed.indexOf(req.header('Origin')) !== -1) {
+    corsOptions = { origin: true };
+  } else {
+    corsOptions = { origin: false };
   }
+  callback(null, corsOptions);
 };
+
 // Server Port
 const port = process.env.PORT || 8000;
-app.options('*', cors(corsOptions));
+app.options('*', cors(corsDelegated));
 app.use(cors());
 app.use('/api', limiter);
 app.use(express.json());
