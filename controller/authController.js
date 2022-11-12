@@ -65,7 +65,9 @@ exports.login = catchAsync(async (req, res, next) => {
         '-__v -birthYear -catchPhrase -email -following -followers -coverPic -location -photos'
     });
 
-  if (!user || !(await user.verifyPassword(password, user.password))) {
+  const verifiedPassword = await user.verifyPassword(password, user.password);
+
+  if (!user || !verifiedPassword) {
     return next(
       new AppError(
         'Incorrect credentials. Please check your credentials and try again',
