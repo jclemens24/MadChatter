@@ -127,6 +127,6 @@ userSchema.methods.verifyPassword = async function (bodyPass, userPass) {
   return await bcryptjs.compare(bodyPass, userPass);
 };
 
-// const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = User;
