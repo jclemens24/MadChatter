@@ -55,21 +55,17 @@ exports.login = catchAsync(async (req, res, next) => {
     );
   }
 
-  const user = await User.findOne(
-    {
-      email
-    },
-    '+password'
-  )
-  .populate({
-    path: 'following',
-    select:
-      '-__v -birthYear -catchPhrase -email -following -followers -coverPic -location -photos'
-  });
+  const user = await User.findOne({ email: email })
+    .select('+password')
+    .populate({
+      path: 'following',
+      select:
+        '-__v -birthYear -catchPhrase -email -following -followers -coverPic -location -photos'
+    });
+  // eslint-disable-next-line no-console
+  console.log(user instanceof User);
 
-  const verifiedPassword = await user.verifyPassword(password, user.password);
-
-  if (!user || !verifiedPassword) {
+  if (!user || !(await user.verifyPassword(password, user.password))) {
     return next(
       new AppError(
         'Incorrect credentials. Please check your credentials and try again',
