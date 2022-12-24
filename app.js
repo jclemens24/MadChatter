@@ -43,7 +43,6 @@ mongoose
 // Initialize App
 const app = express();
 app.enable('trust proxy');
-app.options('*', cors());
 
 const allowedOrigins = [
   'https://mad-chatter-app.web.app',
@@ -73,7 +72,8 @@ const io = new Server(httpServer, {
 
 // Server Port
 const port = process.env.PORT || 8000;
-app.use(cors(corsDelegation));
+app.options('*', cors(corsDelegation));
+app.use(cors());
 app.use('/api', limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
