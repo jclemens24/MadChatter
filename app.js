@@ -38,20 +38,14 @@ mongoose
 const app = express();
 app.enable('trust proxy');
 
-const allowedOrigins = [
-  'https://mad-chatter-app.web.app',
-  'https://mad-chatter-app.firebaseapp.com'
-];
+const allowedOrigins = ['*'];
 
 const corsDelegation = function (request, callback) {
   let corsOptions;
 
   if (allowedOrigins.indexOf(request.headers('Origin')) !== -1) {
     corsOptions = {
-      origin: [
-        'https://mad-chatter-app-web.app',
-        'https://mad-chatter-app-firebaseapp.com'
-      ],
+      origin: true,
       methods: 'GET,OPTIONS,HEAD,POST,PUT,PATCH,DELETE',
       allowedHeaders: [
         '*',
