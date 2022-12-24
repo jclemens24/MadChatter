@@ -61,7 +61,11 @@ const corsDelegation = function (request, callback) {
         'accept',
         'Access-Control-Allow-Origin'
       ],
-      exposedHeaders: ['Content-Range', 'Content-Encoding'],
+      exposedHeaders: [
+        'Content-Range',
+        'Content-Encoding',
+        'Access-Control-Allow-Origin'
+      ],
       maxAge: 3600,
       preflightContinue: true,
       optionsSuccessStatus: 204
@@ -89,7 +93,11 @@ const io = new Server(httpServer, {
       'Access-Control-Allow-Origin'
     ],
     methods: 'GET,OPTIONS,HEAD,POST,PUT,PATCH,DELETE',
-    exposedHeaders: ['Content-Range', 'Content-Encoding'],
+    exposedHeaders: [
+      'Content-Range',
+      'Content-Encoding',
+      'Access-Control-Allow-Origin'
+    ],
     maxAge: 3600,
     preflightContinue: true,
     optionsSuccessStatus: 204
@@ -98,8 +106,8 @@ const io = new Server(httpServer, {
 
 // Server Port
 const port = process.env.PORT || 3000;
-app.options('*', cors());
 app.use(cors(corsDelegation));
+app.options('*', cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join('public', 'images')));
@@ -108,6 +116,8 @@ app.use(
     hidePoweredBy: true
   })
 );
+
+console.log(app.enabled('trust proxy'));
 
 // Global Middleware
 if (process.env.NODE_ENV === 'development') {
@@ -124,10 +134,10 @@ app.use('/api/messages', messageRouter);
 
 // Error Middleware
 app.use(errorController);
-app.all('*', (req, res, next) => {
-  // eslint-disable-next-line new-cap
-  next(new appError(`Can't find ${req.originalUrl} on this server!`, 404));
-});
+// app.all('*', (req, res, next) => {
+//   // eslint-disable-next-line new-cap
+//   next(new appError(`Can't find ${req.originalUrl} on this server!`, 404));
+// });
 
 io.use((socket, next) => {
   const sessionId = socket.handshake.auth._id;
