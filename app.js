@@ -54,8 +54,8 @@ const io = new Server(httpServer, {
   }
 });
 const allowed = [
-  'https://mad-chatter-app.web.app',
-  'https://mad-chatter-app.firebaseapp.com'
+  'https://mad-chatter-app.web.app/',
+  'https://mad-chatter-app.firebaseapp.com/'
 ];
 
 const corsDelegated = function (req, callback) {
@@ -63,7 +63,7 @@ const corsDelegated = function (req, callback) {
 
   if (
     allowed.indexOf(req.header('Origin')) !== -1 ||
-    allowed.indexOf(req.header('Referrer')) !== -1
+    allowed.indexOf(req.header('Referer')) !== -1
   ) {
     corsOptions = { origin: true };
   } else {
