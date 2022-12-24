@@ -83,8 +83,8 @@ const io = new Server(httpServer, {
 
 // Server Port
 const port = process.env.PORT || 3000;
-app.options('*', cors(corsDelegation));
-app.use(cors());
+app.options('*', cors());
+app.use(cors(corsDelegation));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join('public', 'images')));
