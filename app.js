@@ -9,14 +9,13 @@ const path = require('path');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
-const limiter = require('./utils/rateLimiter');
 const userRouter = require('./routes/userRoute');
 const postRouter = require('./routes/postRoute');
 const conversationRouter = require('./routes/conversationRoute');
 const messageRouter = require('./routes/messageRoute');
 const commentRouter = require('./routes/commentRoute');
 const errorController = require('./controller/errorController');
-const AppError = require('./utils/appError');
+const appError = require('./utils/appError');
 const { InMemorySessionStore } = require('./store/sessionStore');
 
 const sessionStore = new InMemorySessionStore();
@@ -81,10 +80,9 @@ const io = new Server(httpServer, {
 });
 
 // Server Port
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 3000;
 app.use(cors(corsDelegation));
 app.options('*', cors(corsDelegation));
-app.use('/api', limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join('public', 'images')));
@@ -110,7 +108,8 @@ app.use('/api/messages', messageRouter);
 // Error Middleware
 app.use(errorController);
 app.all('*', (req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+  // eslint-disable-next-line new-cap
+  next(new appError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
 io.use((socket, next) => {
@@ -130,7 +129,8 @@ io.use((socket, next) => {
   socket.username = socket.handshake.auth.username;
   socket._id = socket.handshake.auth._id;
   if (!sessionId)
-    return next(new AppError('Trouble connecting. Please reload.', 400));
+    // eslint-disable-next-line new-cap
+    return next(new appError('Trouble connecting. Please reload.', 400));
   next();
 });
 
