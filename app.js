@@ -48,14 +48,14 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: [
-      'https://mad-chatter-app.web.app',
-      'https://mad-chatter-app.firebaseapp.com'
+      'https://mad-chatter-app.web.app/*',
+      'https://mad-chatter-app.firebaseapp.com/*'
     ]
   }
 });
 const allowed = [
-  'https://mad-chatter-app.web.app/',
-  'https://mad-chatter-app.firebaseapp.com/'
+  'https://mad-chatter-app.web.app',
+  'https://mad-chatter-app.firebaseapp.com'
 ];
 
 const corsDelegated = function (req, callback) {
