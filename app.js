@@ -52,7 +52,7 @@ const corsDelegation = function (request, callback) {
         'https://mad-chatter-app-web.app',
         'https://mad-chatter-app-firebaseapp.com'
       ],
-      methods: 'GET,HEAD,POST,PUT,PATCH,DELETE',
+      methods: 'GET,OPTIONS,HEAD,POST,PUT,PATCH,DELETE',
       allowedHeaders: [
         '*',
         'content-type',
@@ -61,7 +61,7 @@ const corsDelegation = function (request, callback) {
         'accept',
         'Access-Control-Allow-Origin'
       ],
-      credentials: true,
+      exposedHeaders: ['Content-Range', 'Content-Encoding'],
       preflightContinue: true,
       optionsSuccessStatus: 204
     };
@@ -83,8 +83,8 @@ const io = new Server(httpServer, {
 
 // Server Port
 const port = process.env.PORT || 3000;
-app.use(cors());
 app.options('*', cors(corsDelegation));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join('public', 'images')));
