@@ -52,8 +52,18 @@ const allowedOrigins = [
 const corsDelegation = function (request, callback) {
   let corsOptions;
 
-  if (allowedOrigins.indexOf(request.headers('origin')) !== -1) {
-    corsOptions = { origin: true };
+  if (allowedOrigins.indexOf(request.headers('Origin')) !== -1) {
+    corsOptions = {
+      origin: [
+        'https://mad-chatter-app-web.app',
+        'https://mad-chatter-app-firebaseapp.com'
+      ],
+      methods: 'GET,HEAD,POST,PUT,PATCH,DELETE',
+      allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
+      credentials: true,
+      preflightContinue: true,
+      optionsSuccessStatus: 204
+    };
   } else {
     corsOptions = { origin: false };
   }
@@ -68,14 +78,6 @@ const io = new Server(httpServer, {
       'https://mad-chatter-app.firebaseapp.com'
     ]
   }
-});
-
-app.use((req, res, next) => {
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  next();
 });
 
 // Server Port
@@ -187,9 +189,6 @@ io.on('connection', async socket => {
 });
 
 // Server Listening
-httpServer.listen(port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`listening on server port ${port}`);
-});
+httpServer.listen(port);
 
 module.exports = httpServer;
