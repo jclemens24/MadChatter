@@ -48,33 +48,15 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: [
-      'https://mad-chatter-app.web.app/',
-      'https://mad-chatter-app.firebaseapp.com/'
+      'https://mad-chatter-app.web.app',
+      'https://mad-chatter-app.firebaseapp.com'
     ]
   }
 });
-const allowed = [
-  'https://mad-chatter-app.web.app/',
-  'https://mad-chatter-app.firebaseapp.com/'
-];
-
-const corsDelegated = function (req, callback) {
-  let corsOptions;
-
-  if (
-    allowed.indexOf(req.header('Origin')) !== -1 ||
-    allowed.indexOf(req.header('Referer')) !== -1
-  ) {
-    corsOptions = { origin: true };
-  } else {
-    corsOptions = { origin: false };
-  }
-  callback(null, corsOptions);
-};
 
 // Server Port
 const port = process.env.PORT || 8000;
-app.options('*', cors(corsDelegated));
+app.options('*', cors());
 app.use(cors());
 app.use('/api', limiter);
 app.use(express.json());
