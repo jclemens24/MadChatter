@@ -62,6 +62,7 @@ const corsDelegation = function (request, callback) {
         'Access-Control-Allow-Origin'
       ],
       exposedHeaders: ['Content-Range', 'Content-Encoding'],
+      maxAge: 3600,
       preflightContinue: true,
       optionsSuccessStatus: 204
     };
@@ -77,7 +78,21 @@ const io = new Server(httpServer, {
     origin: [
       'https://mad-chatter-app.web.app',
       'https://mad-chatter-app.firebaseapp.com'
-    ]
+    ],
+    credentials: true,
+    allowedHeaders: [
+      '*',
+      'content-type',
+      'authorization',
+      'origin',
+      'accept',
+      'Access-Control-Allow-Origin'
+    ],
+    methods: 'GET,OPTIONS,HEAD,POST,PUT,PATCH,DELETE',
+    exposedHeaders: ['Content-Range', 'Content-Encoding'],
+    maxAge: 3600,
+    preflightContinue: true,
+    optionsSuccessStatus: 204
   }
 });
 
@@ -191,6 +206,9 @@ io.on('connection', async socket => {
 });
 
 // Server Listening
-httpServer.listen(port);
+httpServer.listen(port, () => {
+  // eslint-disable-next-line no-console
+  console.log(`Listening on port ${port}`);
+});
 
 module.exports = httpServer;
