@@ -43,6 +43,23 @@ mongoose
 // Initialize App
 const app = express();
 app.enable('trust proxy');
+app.options('*', cors());
+
+const allowedOrigins = [
+  'https://mad-chatter-app.web.app',
+  'https://mad-chatter-app.firebaseapp.com'
+];
+
+const corsDelegation = function (request, callback) {
+  let corsOptions;
+
+  if (allowedOrigins.indexOf(request.headers('origin')) !== -1) {
+    corsOptions = { origin: true };
+  } else {
+    corsOptions = { origin: false };
+  }
+  callback(null, corsOptions);
+};
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -56,8 +73,7 @@ const io = new Server(httpServer, {
 
 // Server Port
 const port = process.env.PORT || 8000;
-app.options('*', cors());
-app.use(cors());
+app.use(cors(corsDelegation));
 app.use('/api', limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
