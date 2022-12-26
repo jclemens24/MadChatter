@@ -38,15 +38,6 @@ mongoose
 const app = express();
 app.enable('trust proxy');
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://mad-chatter-app.web.app'); // update to match the domain you will make the request from
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  );
-  next();
-});
-
 const allowedOrigins = [
   'https://mad-chatter-app.web.app',
   'https://mad-chatter-app.firebaseapp.com'
@@ -58,7 +49,7 @@ const corsDelegation = function (request, callback) {
   if (allowedOrigins.indexOf(request.headers('Origin')) !== -1) {
     corsOptions = {
       origin: true,
-      methods: 'GET,OPTIONS,HEAD,POST,PUT,PATCH,DELETE',
+      methods: 'GET,HEAD,POST,PUT,PATCH,DELETE',
       allowedHeaders: [
         '*',
         'content-type',
@@ -88,7 +79,24 @@ const io = new Server(httpServer, {
     origin: [
       'https://mad-chatter-app.web.app',
       'https://mad-chatter-app.firebaseapp.com'
-    ]
+    ],
+    methods: 'GET,HEAD,POST,PUT,PATCH,DELETE',
+    allowedHeaders: [
+      '*',
+      'content-type',
+      'authorization',
+      'origin',
+      'accept',
+      'Access-Control-Allow-Origin'
+    ],
+    exposedHeaders: [
+      'Content-Range',
+      'Content-Encoding',
+      'Access-Control-Allow-Origin'
+    ],
+    maxAge: 3600,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   }
 });
 
