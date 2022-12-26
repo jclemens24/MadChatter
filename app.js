@@ -79,23 +79,7 @@ const io = new Server(httpServer, {
     origin: [
       'https://mad-chatter-app.web.app',
       'https://mad-chatter-app.firebaseapp.com'
-    ],
-    methods: 'GET,HEAD,POST,PUT,PATCH,DELETE',
-    allowedHeaders: [
-      'content-type',
-      'authorization',
-      'origin',
-      'accept',
-      'Access-Control-Allow-Origin'
-    ],
-    exposedHeaders: [
-      'Content-Range',
-      'Content-Encoding',
-      'Access-Control-Allow-Origin'
-    ],
-    maxAge: 3600,
-    preflightContinue: false,
-    optionsSuccessStatus: 204
+    ]
   }
 });
 
