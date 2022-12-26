@@ -82,7 +82,6 @@ const io = new Server(httpServer, {
     ],
     methods: 'GET,HEAD,POST,PUT,PATCH,DELETE',
     allowedHeaders: [
-      '*',
       'content-type',
       'authorization',
       'origin',
@@ -102,7 +101,7 @@ const io = new Server(httpServer, {
 
 // Server Port
 const port = process.env.PORT || 3000;
-app.use(cors());
+app.use(cors(corsDelegation));
 app.options('*', cors(corsDelegation));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
