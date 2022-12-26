@@ -28,26 +28,19 @@ export const login = createAsyncThunk(
   'auth/login',
   async ({ email, password }, thunkAPI) => {
     try {
-      const controller = new AbortController();
-      const res = await axios({
-        method: 'POST',
-        signal: controller.signal,
+      const body = {
+        email: email,
+        password: password,
+      };
+
+      const request = await axios({
+        method: 'post',
+        data: body,
+        headers: { 'Content-Type': 'application/json;charset=utf-8' },
         url: `${process.env.REACT_APP_BACKEND_URL}/users/login`,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        data: {
-          email,
-          password,
-        },
       });
-      thunkAPI.signal.addEventListener('abort', () => {
-        controller.abort();
-      });
-      const data = await res.data;
-      if (res.data.status === 'error' || res.data.status === 'fail') {
-        throw new Error(res.data.message);
-      }
+
+      const data = await request.data;
       localStorage.setItem(
         'user',
         JSON.stringify({
@@ -58,7 +51,7 @@ export const login = createAsyncThunk(
       thunkAPI.dispatch(postActions.setPosts({ posts: data.posts }));
       return data;
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data.message);
+      return thunkAPI.rejectWithValue(err.request.data.message);
     }
   }
 );

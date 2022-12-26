@@ -32,7 +32,7 @@ const Messenger = () => {
   }, [authUser.following]);
 
   useEffect(() => {
-    socket.current = io(`https://mad-chatter-backend.herokuapp.com`, {
+    socket.current = io(`https://mad-chatter-backend-heroku-22.herokuapp.com`, {
       auth: {
         _id: _id,
         userId: _id,

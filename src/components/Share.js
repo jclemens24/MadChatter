@@ -53,7 +53,7 @@ const Share = props => {
     event.preventDefault();
     const chosenFile = event.target.files[0];
     setPreviewUrl(window.URL.createObjectURL(chosenFile));
-    setFile(event.target.files[0]);
+    setFile(chosenFile);
   };
   const pickImageHandler = () => {
     filePicker.current.click();
