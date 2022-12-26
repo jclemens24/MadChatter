@@ -61,7 +61,7 @@ const corsDelegation = function (request, callback) {
         'Access-Control-Allow-Origin'
       ],
       maxAge: 3600,
-      preflightContinue: true,
+      preflightContinue: false,
       optionsSuccessStatus: 204
     };
   } else {
@@ -76,32 +76,14 @@ const io = new Server(httpServer, {
     origin: [
       'https://mad-chatter-app.web.app',
       'https://mad-chatter-app.firebaseapp.com'
-    ],
-    credentials: true,
-    allowedHeaders: [
-      '*',
-      'content-type',
-      'authorization',
-      'origin',
-      'accept',
-      'Access-Control-Allow-Origin'
-    ],
-    methods: 'GET,OPTIONS,HEAD,POST,PUT,PATCH,DELETE',
-    exposedHeaders: [
-      'Content-Range',
-      'Content-Encoding',
-      'Access-Control-Allow-Origin'
-    ],
-    maxAge: 3600,
-    preflightContinue: true,
-    optionsSuccessStatus: 204
+    ]
   }
 });
 
 // Server Port
 const port = process.env.PORT || 3000;
-app.use(cors(corsDelegation));
-app.options('*', cors());
+app.use(cors());
+app.options('*', cors(corsDelegation));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join('public', 'images')));
