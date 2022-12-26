@@ -73,7 +73,7 @@ const corsDelegation = function (request, callback) {
         'Access-Control-Allow-Origin'
       ],
       maxAge: 3600,
-      preflightContinue: false,
+      preflightContinue: true,
       optionsSuccessStatus: 204
     };
   } else {
