@@ -52,10 +52,10 @@ const corsDelegation = function (request, callback) {
       methods: 'GET,HEAD,POST,PUT,PATCH,DELETE',
       allowedHeaders: [
         '*',
-        'content-type',
-        'authorization',
-        'origin',
-        'accept',
+        'Content-Type',
+        'Authorization',
+        'Origin',
+        'Accept',
         'Access-Control-Allow-Origin'
       ],
       exposedHeaders: [
@@ -79,13 +79,14 @@ const io = new Server(httpServer, {
     origin: [
       'https://mad-chatter-app.web.app',
       'https://mad-chatter-app.firebaseapp.com'
-    ]
+    ],
+    credentials: true
   }
 });
 
 // Server Port
 const port = process.env.PORT || 3000;
-app.use(cors(corsDelegation));
+app.use(cors());
 app.options('*', cors(corsDelegation));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
