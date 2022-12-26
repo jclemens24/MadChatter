@@ -79,8 +79,7 @@ const io = new Server(httpServer, {
     origin: [
       'https://mad-chatter-app.web.app',
       'https://mad-chatter-app.firebaseapp.com'
-    ],
-    credentials: true
+    ]
   }
 });
 
