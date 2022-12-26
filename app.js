@@ -38,7 +38,19 @@ mongoose
 const app = express();
 app.enable('trust proxy');
 
-const allowedOrigins = ['*'];
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://mad-chatter-app.web.app'); // update to match the domain you will make the request from
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  next();
+});
+
+const allowedOrigins = [
+  'https://mad-chatter-app.web.app',
+  'https://mad-chatter-app.firebaseapp.com'
+];
 
 const corsDelegation = function (request, callback) {
   let corsOptions;
